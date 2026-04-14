@@ -45,13 +45,30 @@ function headers(): Record<string, string> | null {
   };
 }
 
+function normalizeE164(n: string | undefined): string | undefined {
+  if (!n) return undefined;
+  const trimmed = n.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.startsWith("+")) return trimmed;
+  // Bare US-length numbers get a +1. Longer/shorter just get a leading +.
+  if (/^\d{10}$/.test(trimmed)) return `+1${trimmed}`;
+  if (/^\d{11,15}$/.test(trimmed)) return `+${trimmed}`;
+  return trimmed;
+}
+
 export async function sendImessage(toNumber: string, text: string): Promise<void> {
   const h = headers();
   if (!h) {
     console.warn("[sendblue] missing credentials — not sending");
     return;
   }
-  const from = process.env.SENDBLUE_FROM_NUMBER;
+  const from = normalizeE164(process.env.SENDBLUE_FROM_NUMBER);
+  if (!from) {
+    console.error(
+      `[sendblue] SENDBLUE_FROM_NUMBER is not set. Run \`npm run sendblue:sync\` (pulls it from \`sendblue lines\`) or paste your provisioned number into .env.local, then restart \`npm run dev\`.`,
+    );
+    return;
+  }
   const plain = stripMarkdown(text);
   for (const part of chunk(plain)) {
     const res = await fetch(`${API_BASE}/send-message`, {
@@ -64,12 +81,15 @@ export async function sendImessage(toNumber: string, text: string): Promise<void
       console.error(`[sendblue] send failed ${res.status}: ${body}`);
       if (body.includes("missing required parameter") && body.includes("from_number")) {
         console.error(
-          `[sendblue] → Sendblue's plan requires a from_number. Set SENDBLUE_FROM_NUMBER in .env.local to your Sendblue-provisioned number and restart.`,
+          `[sendblue] → Set SENDBLUE_FROM_NUMBER in .env.local to your Sendblue-provisioned number and restart the server.`,
         );
       } else if (body.includes("Cannot send messages to self")) {
         console.error(
-          `[sendblue] → SENDBLUE_FROM_NUMBER is set to the number you're texting FROM. ` +
-            `It must be the Sendblue-provisioned number on your account, not your personal cell.`,
+          `[sendblue] → SENDBLUE_FROM_NUMBER is your personal cell. It must be the Sendblue-provisioned number (the one people text TO).`,
+        );
+      } else if (body.includes("This phone number is not defined")) {
+        console.error(
+          `[sendblue] → Sendblue doesn't recognize from_number=${from}. Run \`npm run sendblue:sync\` to pull the correct one from \`sendblue lines\`, then restart the server.`,
         );
       }
     } else {
