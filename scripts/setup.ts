@@ -244,7 +244,8 @@ Before you start:
     sendbluePrompts.push({
       type: "text",
       name: "SENDBLUE_FROM_NUMBER",
-      message: "Sendblue from-number (e.g. +15551234567)",
+      message:
+        "Your Sendblue-provisioned number (the one people TEXT TO, not your personal number). Leave blank to let Sendblue auto-pick.",
       initial: "",
     });
   }
@@ -342,15 +343,23 @@ That starts the server, Convex watcher, debug dashboard, AND ngrok all
 together — color-prefixed output so you can tell who's saying what. Once
 the tunnel is live, you'll see a banner with your public URL.
 
-Wire up Sendblue:
+Wire up Sendblue (one-time, takes ~30 seconds):
 
-  1. Copy the "Sendblue webhook" URL from the banner.
-  2. Sendblue dashboard → Numbers → your number → Webhooks → paste → save.
+  1. Copy the "Sendblue webhook" URL printed by ngrok.
+  2. Sendblue dashboard → API Settings → Webhook Configuration
+  3. Add it as an INBOUND MESSAGE webhook.
+  4. Paste the URL. Save.
 
 Test it:
   • Open http://localhost:5173 for the debug dashboard (Chat tab works
     without Sendblue).
-  • Or text your Sendblue number — the agent should reply.
+  • Or text your Sendblue number from a different phone. The agent replies.
+
+A common gotcha:
+  SENDBLUE_FROM_NUMBER must be the Sendblue-provisioned number on your
+  account (the one people text TO). If you set it to your own personal
+  number, Sendblue returns "Cannot send messages to self". Leave it
+  blank and Sendblue auto-picks.
 
 About PUBLIC_URL in .env.local:
   It defaults to http://localhost:${port} and is only read by the OAuth flow

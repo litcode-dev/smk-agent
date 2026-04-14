@@ -100,16 +100,25 @@ async function waitForNgrokUrl(timeoutMs = 15000) {
 }
 
 function showBanner(url) {
-  const line = "═".repeat(60);
+  const line = "═".repeat(64);
   const webhook = `${url}/sendblue/webhook`;
+  const from = envVars.SENDBLUE_FROM_NUMBER;
+  const fromLine = from
+    ? `  Your Sendblue number (text this one):  ${from}`
+    : `  Your Sendblue number:                  (not set — Sendblue picks)`;
+
   console.log(`
 ${C.banner}${line}
   ngrok tunnel is live.
 
-  Public URL:        ${url}
-  Sendblue webhook:  ${webhook}
+  Public URL:                              ${url}
+  Sendblue webhook (inbound):              ${webhook}
+${fromLine}
 
-  → Paste the webhook URL into your Sendblue dashboard.
+  → Sendblue dashboard → API Settings → Webhook Configuration
+    Add as INBOUND MESSAGE webhook. Paste the URL above.
+
+  Text your Sendblue number from a DIFFERENT phone to test.
 ${line}${C.reset}
 `);
 }

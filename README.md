@@ -93,14 +93,22 @@ ngrok config add-authtoken <your-token>   # free at https://dashboard.ngrok.com
 npm run dev
 ```
 
-`npm run dev` prints color-prefixed output from all four processes and shows a banner with your ngrok webhook URL once the tunnel is live. Copy that URL into your Sendblue dashboard as the webhook for your number.
+`npm run dev` prints color-prefixed output from all four processes and shows a banner with your ngrok webhook URL once the tunnel is live.
 
 ```
 Public URL:        https://<abc123>.ngrok.app
 Sendblue webhook:  https://<abc123>.ngrok.app/sendblue/webhook
 ```
 
-Text your Sendblue number. The agent replies.
+Then wire it up in Sendblue (one-time):
+
+1. **Sendblue dashboard → API Settings → Webhook Configuration**
+2. Add as an **INBOUND MESSAGE** webhook
+3. Paste the `Sendblue webhook` URL from the banner, save
+
+Text your Sendblue number from a **different** phone. The agent replies.
+
+> **Gotcha:** `SENDBLUE_FROM_NUMBER` must be the Sendblue-provisioned number (the one people text TO), **not your personal cell**. If you set it to your own number, Sendblue returns `Cannot send messages to self`. Leave it blank and Sendblue auto-picks the right one.
 
 Visit `http://localhost:5173` for the debug dashboard (chat, agents, memory, events). You can also chat from the dashboard's Chat tab without Sendblue.
 
