@@ -118,6 +118,8 @@ ${fromLine}
   → Sendblue dashboard → API Settings → Webhook Configuration
     Add as INBOUND MESSAGE webhook. Paste the URL above.
 ${line}${C.reset}
+${C.dim}  ⚠ Free-plan ngrok URLs change every restart. For a stable URL,
+    use an ngrok paid plan (reserved domain) or Cloudflare Tunnel.${C.reset}
 `);
 }
 

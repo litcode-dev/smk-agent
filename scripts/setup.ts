@@ -332,6 +332,12 @@ Before you start: install ngrok (one-time).
   # or download:  https://ngrok.com/download
   ngrok config add-authtoken <your-token>      # free at https://dashboard.ngrok.com
 
+⚠ ngrok's FREE plan gives you a NEW URL every restart. That means
+  re-pasting into Sendblue every time.  For anything beyond a demo,
+  use a stable URL:
+    • ngrok paid plan (reserved domain), or
+    • Cloudflare Tunnel: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
+
 Then run ONE command:
 
   npm run dev

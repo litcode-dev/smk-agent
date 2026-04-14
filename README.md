@@ -100,13 +100,22 @@ Public URL:        https://<abc123>.ngrok.app
 Sendblue webhook:  https://<abc123>.ngrok.app/sendblue/webhook
 ```
 
-Then wire it up in Sendblue (one-time):
+Then wire it up in Sendblue:
 
 1. **Sendblue dashboard → API Settings → Webhook Configuration**
 2. Add as an **INBOUND MESSAGE** webhook
 3. Paste the `Sendblue webhook` URL from the banner, save
 
 Text your Sendblue-provisioned number from a **different** phone. The agent replies.
+
+> **⚠ ngrok free plan gives you a new URL every time.** That means every time you restart `npm run dev`, your Sendblue webhook URL is dead until you paste the new one in.
+>
+> If you're going to run this for more than a quick demo, **strongly recommend one of:**
+> - **ngrok paid plan** — gives you a reserved domain that stays the same forever
+> - **[Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)** — free, stable subdomain, a bit more setup
+> - Any other tunnel with a static URL (Tailscale Funnel, localtunnel reserved, etc.)
+>
+> If you use a non-ngrok tunnel, point it at `localhost:3456` yourself — `npm run dev` will still run the rest, just ignore its ngrok output and use your tunnel's URL.
 
 > **Gotcha:** `SENDBLUE_FROM_NUMBER` must be your Sendblue-provisioned number (the one people text TO), not your personal cell. Sendblue's API requires it, and misconfiguring it returns either "missing required parameter: from_number" or "Cannot send messages to self".
 >
