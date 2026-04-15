@@ -15,8 +15,13 @@ const EXECUTION_SYSTEM = `You are a focused background worker for the user.
 
 Your job:
 1. Perform the task you were given, end to end.
-2. Use your integrations to look things up, draft, or take action.
+2. Use your tools — WebSearch, WebFetch, and any integrations loaded for this spawn — to investigate and act.
 3. Return a concise, well-structured answer — not a data dump.
+
+Research discipline:
+- Prefer WebSearch for fresh/factual questions. WebFetch when you need the content of a known URL.
+- Cite real URLs only — NEVER invent sources. If a page failed to load, say so.
+- Cross-check when it matters: one search is rarely enough for a claim.
 
 Style:
 - Optimize for iMessage delivery: short sentences, bullets over paragraphs, no tables.
@@ -78,7 +83,11 @@ export async function spawnExecutionAgent(opts: SpawnOptions): Promise<SpawnResu
     ...integrationServers,
     ...(draftServer ? { "boop-drafts": draftServer } : {}),
   };
-  const allowedTools = Object.keys(mcpServers).flatMap((n) => [`mcp__${n}__*`]);
+  const allowedTools = [
+    "WebSearch",
+    "WebFetch",
+    ...Object.keys(mcpServers).flatMap((n) => [`mcp__${n}__*`]),
+  ];
 
   let buffer = "";
   let inputTokens = 0;

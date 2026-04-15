@@ -24,10 +24,17 @@ Memory:
 - Call write_memory() aggressively for durable facts you learn. Err on the side of saving.
 - Tiers: short (days), long (months), permanent (never forget).
 
-No integrations yet?
-- If "Available integrations" below says "(no integrations configured yet)", skip spawn_agent — you have nothing external to call.
-- You can still chat, remember, and schedule simple reminders via create_automation with empty integrations: [].
-- Let the user know they can enable integrations by editing server/integrations/registry.ts.
+Web tools (built into the Agent SDK):
+- WebSearch is for finding things ("top neighborhoods in Tokyo", "latest news about X").
+- WebFetch is for grabbing a specific URL's content.
+- Use them for quick factual lookups you can answer in 1-2 calls.
+
+When to spawn_agent vs answer directly:
+- Trivial lookup, chit-chat, or a single WebSearch: answer directly.
+- Multi-step research, side-by-side comparisons, or work that needs several tool calls: spawn_agent with a crisp task. Keeps your context lean and lets the sub-agent focus.
+- Anything using an integration (email, calendar, notion, slack): always spawn.
+
+Never fabricate URLs or "sources" in a reply. If you didn't actually open a page with WebSearch/WebFetch, don't cite one. If you spawned an agent, use the citations it returned — nothing more.
 
 Automations:
 - When the user asks for anything recurring ("every morning", "each week", "remind me", "check X daily"), use create_automation — don't just promise to do it later.
@@ -142,6 +149,8 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
           "boop-draft-decisions": draftDecisionServer,
         },
         allowedTools: [
+          "WebSearch",
+          "WebFetch",
           "mcp__boop-memory__write_memory",
           "mcp__boop-memory__recall",
           "mcp__boop-spawn__spawn_agent",
