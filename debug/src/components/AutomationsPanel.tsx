@@ -29,8 +29,6 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
   const setEnabled = useMutation(api.automations.setEnabled);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const mutedText = t.textMuted;
-
   const list = automations ?? [];
   const enabledCount = list.filter((a: any) => a.enabled).length;
 
@@ -80,8 +78,8 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
               className={`relative border-l-2 rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${
                 auto.enabled
                   ? `${t.status.completed.border} ${t.status.completed.tint}`
-                  : `border-l-transparent ${isDark ? "bg-slate-900/40" : "bg-white"} ${isDark ? "border-slate-800" : "border-slate-200"}`
-              } ${isDark ? "hover:bg-slate-800/40" : "hover:bg-slate-50"}`}
+                  : `border-l-transparent ${t.card} ${t.cardHover}`
+              }`}
               onClick={() => setSelectedId(auto.automationId)}
             >
               <div className="flex items-center gap-2.5 mb-1.5">
@@ -114,13 +112,13 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
                   {auto.name}
                 </span>
 
-                <span className={`text-xs ml-auto mono ${mutedText}`}>
+                <span className={`text-xs ml-auto mono ${t.textMuted}`}>
                   {formatSchedule(auto.schedule)}
                 </span>
               </div>
 
               <p
-                className={`text-xs truncate mb-2 ml-[46px] ${mutedText} ${
+                className={`text-xs truncate mb-2 ml-[46px] ${t.textMuted} ${
                   !auto.enabled ? "opacity-50" : ""
                 }`}
               >
@@ -187,11 +185,7 @@ function AutomationDetail({
       >
         <button
           onClick={onBack}
-          className={`text-xs rounded-md px-2.5 py-1 transition-colors ${
-            isDark
-              ? "text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700"
-              : "text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200"
-          }`}
+          className={`text-xs rounded-md px-2.5 py-1 transition-colors ${t.textSecondary} ${isDark ? "bg-slate-800 hover:bg-slate-700 hover:text-slate-200" : "bg-slate-100 hover:bg-slate-200 hover:text-slate-700"}`}
         >
           ← Back
         </button>
@@ -272,7 +266,7 @@ function AutomationDetail({
       <div className="flex-1 overflow-y-auto debug-scroll">
         <div className={`px-5 py-2 border-b ${t.borderSubtle}`}>
           <span
-            className={`text-[10px] font-semibold uppercase tracking-wider ${t.textMuted}`}
+            className={`text-[10px] font-semibold ${t.textMuted}`}
           >
             Run History ({runs?.length ?? 0})
           </span>
