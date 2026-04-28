@@ -76,11 +76,14 @@ Safety:
 - Anything that sends a message, creates an event, or takes an external action: call save_draft with a JSON payload instead of the real send/create tool. Return the summary so the interaction agent can show it to the user.
 - Only the interaction agent's send_draft tool commits. You never commit.`;
 
+export type ProgressHandler = (message: string) => Promise<void>;
+
 export interface SpawnOptions {
   task: string;
   integrations: string[];
   conversationId?: string;
   name?: string;
+  onProgress?: ProgressHandler;
 }
 
 export interface SpawnResult {
@@ -137,6 +140,18 @@ export async function spawnExecutionAgent(opts: SpawnOptions): Promise<SpawnResu
   let usage: UsageTotals = { ...EMPTY_USAGE };
   let status: "completed" | "failed" | "cancelled" = "completed";
   let errorMsg: string | undefined;
+
+  // Send periodic "still working…" nudges so iMessage users aren't left in silence.
+  const PROGRESS_INTERVAL_MS = 30_000;
+  const PROGRESS_MESSAGES = ["Still on it…", "Almost there…", "Working on it…"];
+  let progressCount = 0;
+  const progressInterval = opts.onProgress
+    ? setInterval(() => {
+        const msg = PROGRESS_MESSAGES[progressCount % PROGRESS_MESSAGES.length];
+        progressCount++;
+        opts.onProgress!(msg).catch(() => {});
+      }, PROGRESS_INTERVAL_MS)
+    : undefined;
 
   const requestedModel = await getRuntimeModel();
   try {
@@ -208,6 +223,7 @@ export async function spawnExecutionAgent(opts: SpawnOptions): Promise<SpawnResu
       content: errorMsg,
     });
   } finally {
+    if (progressInterval) clearInterval(progressInterval);
     running.delete(agentId);
   }
 
@@ -261,8 +277,11 @@ export function runningAgentIds(): string[] {
 export async function retryAgent(agentId: string): Promise<SpawnResult | null> {
   const existing = await convex.query(api.agents.get, { agentId });
   if (!existing) return null;
+  const task = existing.error
+    ? `${existing.task}\n\n[Previous attempt failed: ${existing.error.slice(0, 200)}. Try a different approach.]`
+    : existing.task;
   return await spawnExecutionAgent({
-    task: existing.task,
+    task,
     integrations: existing.mcpServers,
     conversationId: existing.conversationId,
     name: existing.name,

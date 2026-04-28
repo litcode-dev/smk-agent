@@ -3,6 +3,7 @@ import { v } from "convex/values";
 
 const statusV = v.union(
   v.literal("pending"),
+  v.literal("executing"),
   v.literal("sent"),
   v.literal("rejected"),
   v.literal("expired"),
@@ -64,6 +65,21 @@ export const setStatus = mutation({
       .unique();
     if (!draft) return null;
     await ctx.db.patch(draft._id, { status: args.status, decidedAt: Date.now() });
+    return draft;
+  },
+});
+
+// Atomically transitions a pending draft to "executing". Returns the draft on
+// success, null if the draft doesn't exist or is already claimed/decided.
+export const claimForExecution = mutation({
+  args: { draftId: v.string() },
+  handler: async (ctx, args) => {
+    const draft = await ctx.db
+      .query("drafts")
+      .withIndex("by_draft_id", (q) => q.eq("draftId", args.draftId))
+      .unique();
+    if (!draft || draft.status !== "pending") return null;
+    await ctx.db.patch(draft._id, { status: "executing", decidedAt: Date.now() });
     return draft;
   },
 });

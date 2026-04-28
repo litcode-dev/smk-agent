@@ -4,7 +4,7 @@ import { api } from "../convex/_generated/api.js";
 import { convex } from "./convex-client.js";
 import { createMemoryMcp } from "./memory/tools.js";
 import { extractAndStore } from "./memory/extract.js";
-import { availableIntegrations, spawnExecutionAgent } from "./execution-agent.js";
+import { availableIntegrations, spawnExecutionAgent, type ProgressHandler } from "./execution-agent.js";
 import { createAutomationMcp } from "./automation-tools.js";
 import { createDraftDecisionMcp } from "./draft-tools.js";
 import { createSelfMcp } from "./self-tools.js";
@@ -12,6 +12,22 @@ import { getRuntimeModel } from "./runtime-config.js";
 import { broadcast } from "./broadcast.js";
 import { sendImessage } from "./sendblue.js";
 import { aggregateUsageFromResult, EMPTY_USAGE, type UsageTotals } from "./usage.js";
+
+function makeProgressHandler(conversationId: string, turnId: string): ProgressHandler {
+  return async (message: string) => {
+    if (conversationId.startsWith("sms:")) {
+      const number = conversationId.slice(4);
+      await sendImessage(number, message);
+    }
+    await convex.mutation(api.messages.send, {
+      conversationId,
+      role: "assistant",
+      content: message,
+      turnId,
+    });
+    broadcast("assistant_progress", { conversationId, content: message });
+  };
+}
 
 const INTERACTION_SYSTEM = `You are Boop, a personal agent the user texts from iMessage.
 
@@ -25,7 +41,8 @@ Tone: Warm, witty, concise. Write like you're texting a friend. No corporate voi
 
 Your only tools:
 - recall / write_memory (durable memory for this user)
-- spawn_agent (dispatches a sub-agent that CAN touch the world)
+- spawn_agent (dispatches a single sub-agent that CAN touch the world)
+- spawn_agents_parallel (dispatches multiple sub-agents concurrently — use when tasks are independent)
 - create_automation / list_automations / toggle_automation / delete_automation
 - list_drafts / send_draft / reject_draft
 - get_config / set_model / list_integrations / search_composio_catalog / inspect_toolkit (self-inspection)
@@ -42,10 +59,16 @@ a tutorial, a how-to, any URL, or anything you'd be tempted to "just know" —
 spawn_agent. No exceptions. Even if you're 99% sure. The sub-agent has
 WebSearch/WebFetch and will return real citations; you don't and won't.
 
+Parallel spawning:
+- Use spawn_agents_parallel when the user asks for multiple independent things
+  (e.g. "check my email AND my calendar", "look up X and also Y").
+- Each sub-task gets its own integrations list. Results come back together.
+- Still send ONE send_ack before the parallel call.
+
 Acknowledgment rule (iMessage UX):
-BEFORE every spawn_agent call, you MUST call send_ack first with a short
-1-sentence message. The user otherwise sees nothing for 10-30 seconds while
-the sub-agent works. Examples of good acks:
+BEFORE every spawn_agent or spawn_agents_parallel call, you MUST call send_ack
+first with a short 1-sentence message. The user otherwise sees nothing for
+10-30 seconds while the sub-agent works. Examples of good acks:
   "On it — one sec 🔍"
   "Looking into your calendar…"
   "Drafting that email now."
@@ -55,7 +78,10 @@ Skip the ack ONLY for things you'll answer in under 2 seconds (chit-chat,
 simple memory recall, single automation toggle).
 
 Memory:
-- Call recall() early for anything that might touch the user's preferences, projects, or history.
+- Call recall() early, as soon as you know the topic — before spawning.
+- If the user's intent becomes clearer mid-turn (e.g. they mention a specific
+  person, project, or preference), call recall() again with a more targeted
+  query. Two recalls per turn is fine.
 - Call write_memory() aggressively for durable facts. Err on the side of saving.
 
 Safe to answer directly (no spawn needed):
@@ -106,7 +132,7 @@ Use these tools when the user asks about Boop's own configuration, connected
 accounts, or whether a service is reachable. They're cheap and synchronous —
 no ack required.
 
-Available integrations for spawn_agent: {{INTEGRATIONS}}
+Available integrations are listed at the top of each turn context.
 
 Format: Plain iMessage-friendly text. Markdown sparingly. Keep replies under ~400 chars when you can.`;
 
@@ -178,20 +204,22 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
     ],
   });
 
+  const integrationList = integrations.join(", ") || "(none)";
+
   const spawnServer = createSdkMcpServer({
     name: "boop-spawn",
     version: "0.1.0",
     tools: [
       tool(
         "spawn_agent",
-        "Spawn a focused sub-agent to do real work using external tools. Returns the agent's final answer. Use for anything requiring lookups, drafting, or actions in the user's integrations.",
+        "Spawn a focused sub-agent to do real work using external tools. Returns the agent's final answer. Use for a single task requiring lookups, drafting, or actions.",
         {
           task: z
             .string()
             .describe("Crisp task description — what to find/draft/do, not the raw user message."),
           integrations: z
             .array(z.string())
-            .describe(`Which integrations to give the agent. Available: ${integrations.join(", ") || "(none)"}`),
+            .describe(`Which integrations to give the agent. Available: ${integrationList}`),
           name: z.string().optional().describe("Short label for the agent."),
         },
         async (args) => {
@@ -200,6 +228,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
             integrations: args.integrations,
             conversationId: opts.conversationId,
             name: args.name,
+            onProgress: makeProgressHandler(opts.conversationId, turnId),
           });
           return {
             content: [
@@ -209,6 +238,43 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
               },
             ],
           };
+        },
+      ),
+      tool(
+        "spawn_agents_parallel",
+        "Spawn multiple independent sub-agents concurrently. Use when the user asks for several unrelated things at once (e.g. check email AND calendar). All agents run at the same time; results come back together.",
+        {
+          agents: z
+            .array(
+              z.object({
+                task: z.string().describe("Crisp task for this agent."),
+                integrations: z
+                  .array(z.string())
+                  .describe(`Integrations for this agent. Available: ${integrationList}`),
+                name: z.string().optional().describe("Short label."),
+              }),
+            )
+            .describe("Array of independent agents to run in parallel."),
+        },
+        async (args) => {
+          const results = await Promise.all(
+            args.agents.map((a) =>
+              spawnExecutionAgent({
+                task: a.task,
+                integrations: a.integrations,
+                conversationId: opts.conversationId,
+                name: a.name,
+                onProgress: makeProgressHandler(opts.conversationId, turnId),
+              }),
+            ),
+          );
+          const combined = results
+            .map(
+              (r, i) =>
+                `[Agent ${i + 1}: ${args.agents[i].name ?? args.agents[i].task.slice(0, 40)}]\n${r.result}`,
+            )
+            .join("\n\n---\n\n");
+          return { content: [{ type: "text" as const, text: combined }] };
         },
       ),
     ],
@@ -223,14 +289,16 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
     .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
     .join("\n");
 
-  const systemPrompt = INTERACTION_SYSTEM.replace(
-    "{{INTEGRATIONS}}",
-    integrations.join(", ") || "(no integrations configured yet)",
-  );
+  // System prompt is fully static — no per-turn substitution — so the underlying
+  // model cache can hit on it across every turn in the conversation.
+  const systemPrompt = INTERACTION_SYSTEM;
 
+  // Dynamic context (integrations, history) goes in the user turn so the static
+  // system prompt stays unchanged and cache-eligible.
+  const contextHeader = `Available integrations: ${integrations.join(", ") || "(none configured)"}`;
   const prompt = historyBlock
-    ? `Prior turns:\n${historyBlock}\n\nCurrent message:\n${opts.content}`
-    : opts.content;
+    ? `${contextHeader}\n\nPrior turns:\n${historyBlock}\n\nCurrent message:\n${opts.content}`
+    : `${contextHeader}\n\n${opts.content}`;
 
   const tag = opts.turnTag ?? turnId.slice(-6);
   const log = (msg: string) => console.log(`[turn ${tag}] ${msg}`);
@@ -257,6 +325,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
           "mcp__boop-memory__write_memory",
           "mcp__boop-memory__recall",
           "mcp__boop-spawn__spawn_agent",
+          "mcp__boop-spawn__spawn_agents_parallel",
           "mcp__boop-automations__create_automation",
           "mcp__boop-automations__list_automations",
           "mcp__boop-automations__toggle_automation",

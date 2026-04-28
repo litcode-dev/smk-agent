@@ -5,6 +5,24 @@ import { broadcast } from "./broadcast.js";
 
 const STALE_MS = 15 * 60 * 1000;
 
+// Called once at startup to immediately fail agents left in "running" state
+// by a previous server process. Without this, the heartbeat loop would wait
+// up to 15 minutes before cleaning them up.
+export async function markOrphanedAgents(): Promise<void> {
+  const runningInDb = await convex.query(api.agents.list, { status: "running", limit: 100 });
+  for (const a of runningInDb) {
+    await convex.mutation(api.agents.update, {
+      agentId: a.agentId,
+      status: "failed",
+      error: "Server restarted while agent was running.",
+    });
+    broadcast("agent_stale", { agentId: a.agentId });
+  }
+  if (runningInDb.length > 0) {
+    console.log(`[startup] marked ${runningInDb.length} orphaned agent(s) as failed`);
+  }
+}
+
 export async function sweepStaleAgents(): Promise<void> {
   const runningInDb = await convex.query(api.agents.list, { status: "running", limit: 100 });
   const now = Date.now();

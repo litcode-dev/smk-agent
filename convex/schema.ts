@@ -173,6 +173,7 @@ export default defineSchema({
     payload: v.string(),
     status: v.union(
       v.literal("pending"),
+      v.literal("executing"),
       v.literal("sent"),
       v.literal("rejected"),
       v.literal("expired"),
