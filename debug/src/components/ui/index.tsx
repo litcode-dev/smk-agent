@@ -24,9 +24,9 @@ export function Card({
 }
 
 // ── Badge ───────────────────────────────────────────────────────────────────
-// variant="status" — uses status text color (running/completed/failed/cancelled/spawned)
-// variant="tier"   — uses tier pill classes (short/long/permanent)
-// variant="accent" — uses emerald accent badge
+// variant="status" — text color only (no background pill); use for inline status labels
+// variant="tier"   — full pill (bg + border + text) for short/long/permanent
+// variant="accent" — full emerald pill for count badges
 export function Badge({
   isDark,
   variant,
@@ -112,6 +112,7 @@ export function FilterTabs<T extends string>({
       {options.map((opt) => (
         <button
           key={opt.value}
+          type="button"
           onClick={() => onChange(opt.value)}
           className={`px-2.5 py-1 text-[10px] rounded-md transition-colors ${
             value === opt.value ? t.filterActive : t.filterInactive
