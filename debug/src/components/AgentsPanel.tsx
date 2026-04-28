@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
 import { IntegrationLogo, BrailleIndicator, prettyToolName } from "../lib/branding.js";
+import { darkTheme, lightTheme } from "../lib/theme.js";
+import { PanelHeader, FilterTabs } from "./ui/index.js";
 
 interface LogEntry {
   logType: string;
@@ -27,6 +29,7 @@ function formatLogRow(log: LogEntry): string {
 }
 
 export function AgentsPanel({ isDark }: { isDark: boolean }) {
+  const t = isDark ? darkTheme : lightTheme;
   const agents = useQuery(api.agents.list, { limit: 60 });
   const [selected, setSelected] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -38,9 +41,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
     (a) => a.status === "running" || a.status === "spawned",
   ).length;
 
-  const cardBg = isDark
-    ? "bg-slate-900/40 border-slate-800/60"
-    : "bg-white border-slate-200";
+  const cardBg = isDark ? "bg-slate-900/40" : "bg-white";
   const hoverBg = isDark ? "hover:bg-slate-800/40" : "hover:bg-slate-50";
 
   if (selected) {
@@ -56,46 +57,39 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
   return (
     <div className="flex flex-col h-full -m-5">
       {/* Toolbar */}
-      <div
-        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${
-          isDark ? "border-slate-800" : "border-slate-200"
-        }`}
-      >
-        <h2
-          className={`text-xs font-semibold uppercase tracking-wider ${
-            isDark ? "text-slate-500" : "text-slate-400"
-          }`}
-        >
-          Agents
-        </h2>
+      <div className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${t.borderSubtle}`}>
+        <PanelHeader
+          isDark={isDark}
+          title="Agents"
+          right={
+            <FilterTabs
+              isDark={isDark}
+              options={[
+                { value: "all", label: "All" },
+                { value: "running", label: "Running" },
+                { value: "completed", label: "Done" },
+                { value: "failed", label: "Failed" },
+              ]}
+              value={statusFilter}
+              onChange={setStatusFilter}
+            />
+          }
+        />
         {activeCount > 0 && (
-          <span className="flex items-center gap-1.5 text-xs text-sky-400 font-medium">
-            <span className="relative flex h-2 w-2">
+          <span
+            className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 border text-[10px] font-medium ${
+              isDark
+                ? "bg-sky-950 border-sky-900 text-sky-400"
+                : "bg-sky-50 border-sky-200 text-sky-600"
+            }`}
+          >
+            <span className="relative flex h-[5px] w-[5px]">
               <span className="absolute inline-flex h-full w-full rounded-full bg-sky-400 pulse-ring" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-400" />
+              <span className="relative inline-flex rounded-full h-[5px] w-[5px] bg-sky-400" />
             </span>
             {activeCount} active
           </span>
         )}
-        <div className="ml-auto flex items-center gap-1">
-          {["all", "running", "completed", "failed"].map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-2.5 py-1 text-xs rounded-md capitalize transition-colors ${
-                statusFilter === s
-                  ? isDark
-                    ? "bg-slate-700 text-white font-medium"
-                    : "bg-slate-200 text-slate-800 font-medium"
-                  : isDark
-                    ? "text-slate-500 hover:text-slate-300 hover:bg-slate-800"
-                    : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto debug-scroll p-4 space-y-3">
@@ -126,7 +120,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
               <div
                 key={agent._id}
                 onClick={() => setSelected(agent.agentId)}
-                className={`border rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${cardBg} ${hoverBg}`}
+                className={`relative border-l-2 rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${cardBg} ${hoverBg} ${t.status[agent.status as keyof typeof t.status]?.border ?? "border-l-transparent"} ${t.status[agent.status as keyof typeof t.status]?.tint ?? ""}`}
               >
                 <div className="flex items-center gap-2.5 mb-1.5">
                   <span className="relative flex h-2.5 w-2.5 shrink-0">
