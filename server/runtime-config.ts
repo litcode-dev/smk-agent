@@ -29,7 +29,7 @@ export function resolveModelInput(input: string): string | null {
 }
 
 function envFallback(): string {
-  return process.env.BOOP_MODEL ?? "claude-sonnet-4-6";
+  return process.env.ZANCE_MODEL ?? "claude-sonnet-4-6";
 }
 
 export async function getRuntimeModel(): Promise<string> {

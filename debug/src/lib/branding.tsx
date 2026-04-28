@@ -111,7 +111,7 @@ export function prettyToolName(raw?: string | null): string {
   const { server, action } = parseToolParts(raw);
   if (server && action) {
     const prettyAction = humanize(action);
-    if (normalize(server).startsWith("boop-")) return prettyAction;
+    if (normalize(server).startsWith("zance-")) return prettyAction;
     const brand = findBrand(server);
     if (brand) return `${brand.displayName} · ${prettyAction}`;
     return `${humanize(server)} · ${prettyAction}`;
@@ -119,8 +119,8 @@ export function prettyToolName(raw?: string | null): string {
   return humanize(raw);
 }
 
-// Boop-tool SVG icons (stroke-based, tint via currentColor)
-const BOOP_ICONS: Record<string, (s: number) => ReactNode> = {
+// Zance-tool SVG icons (stroke-based, tint via currentColor)
+const ZANCE_ICONS: Record<string, (s: number) => ReactNode> = {
   recall: (s) => (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z" />
@@ -142,7 +142,7 @@ const BOOP_ICONS: Record<string, (s: number) => ReactNode> = {
       <path d="M12 4v16" />
     </svg>
   ),
-  write_memory: (s) => BOOP_ICONS.recall(s),
+  write_memory: (s) => ZANCE_ICONS.recall(s),
   save_draft: (s) => (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 20h9" />
@@ -167,10 +167,10 @@ const BOOP_ICONS: Record<string, (s: number) => ReactNode> = {
       <path d="M12 7v5l3 2" />
     </svg>
   ),
-  list_automations: (s) => BOOP_ICONS.create_automation(s),
-  toggle_automation: (s) => BOOP_ICONS.create_automation(s),
-  delete_automation: (s) => BOOP_ICONS.create_automation(s),
-  list_drafts: (s) => BOOP_ICONS.save_draft(s),
+  list_automations: (s) => ZANCE_ICONS.create_automation(s),
+  toggle_automation: (s) => ZANCE_ICONS.create_automation(s),
+  delete_automation: (s) => ZANCE_ICONS.create_automation(s),
+  list_drafts: (s) => ZANCE_ICONS.save_draft(s),
   reject_draft: (s) => (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
@@ -180,10 +180,10 @@ const BOOP_ICONS: Record<string, (s: number) => ReactNode> = {
   ),
 };
 
-function getBoopToolIcon(raw?: string | null): ((s: number) => ReactNode) | null {
+function getZanceToolIcon(raw?: string | null): ((s: number) => ReactNode) | null {
   if (!raw) return null;
   const action = raw.split("__").pop() ?? raw;
-  return BOOP_ICONS[action] ?? null;
+  return ZANCE_ICONS[action] ?? null;
 }
 
 export function IntegrationLogo({
@@ -198,7 +198,7 @@ export function IntegrationLogo({
   className?: string;
 }) {
   const brand = getIntegrationBrand(raw);
-  const boopIcon = getBoopToolIcon(raw);
+  const zanceIcon = getZanceToolIcon(raw);
   const [failed, setFailed] = useState(false);
   const style = { width: size, height: size };
   const radius = Math.max(4, Math.round(size * 0.28));
@@ -227,13 +227,13 @@ export function IntegrationLogo({
     );
   }
 
-  if (boopIcon) {
+  if (zanceIcon) {
     return (
       <span
         className={`inline-flex shrink-0 items-center justify-center overflow-hidden bg-violet-500/10 text-violet-400 ${className}`}
         style={{ ...style, borderRadius: radius, border: "0.5px solid rgba(139,92,246,0.25)" }}
       >
-        {boopIcon(iconSize)}
+        {zanceIcon(iconSize)}
       </span>
     );
   }

@@ -60,8 +60,8 @@ export function getComposio(): Composio<ClaudeAgentSDKProvider> | null {
   return singleton;
 }
 
-export function boopUserId(): string {
-  return process.env.COMPOSIO_USER_ID ?? "boop-default";
+export function zanceUserId(): string {
+  return process.env.COMPOSIO_USER_ID ?? "zance-default";
 }
 
 export function displayNameFor(slug: string): string {
@@ -282,7 +282,7 @@ async function fetchToolkitIdentity(
   if (!spec) return {};
   try {
     const result = await composio.tools.execute(spec.tool, {
-      userId: boopUserId(),
+      userId: zanceUserId(),
       // Without this, Composio picks the user's *default* connection for the
       // toolkit, so every Gmail row in the UI ends up labeled with the same
       // (newest) email — even when distinct accounts are connected.
@@ -334,7 +334,7 @@ export async function listConnectedToolkits(): Promise<ConnectedToolkit[]> {
   const composio = getComposio();
   if (!composio) return [];
   try {
-    const resp = await composio.connectedAccounts.list({ userIds: [boopUserId()] });
+    const resp = await composio.connectedAccounts.list({ userIds: [zanceUserId()] });
     const enriched = await Promise.all(
       resp.items.map(async (it) => {
         const seed = extractAccountIdentity(
@@ -499,7 +499,7 @@ export async function authorizeToolkit(
   const existing = (await listConnectedToolkits()).filter(
     (c) => c.slug === slug && c.status === "ACTIVE",
   );
-  const conn = await composio.connectedAccounts.initiate(boopUserId(), authConfigId, {
+  const conn = await composio.connectedAccounts.initiate(zanceUserId(), authConfigId, {
     ...(existing.length > 0 ? { allowMultiple: true } : {}),
     ...(opts?.callbackUrl ? { callbackUrl: opts.callbackUrl } : {}),
     ...(opts?.alias ? { alias: opts.alias } : {}),
@@ -534,7 +534,7 @@ export function buildComposioIntegrationModule(slug: string): IntegrationModule 
       // have a managed OAuth app available — error message even names the fix:
       // "Please specify them in auth_configs."
       const authConfig = (await composio.authConfigs.list({ toolkit: slug })).items[0];
-      const session = await composio.create(boopUserId(), {
+      const session = await composio.create(zanceUserId(), {
         toolkits: [slug],
         manageConnections: false,
         ...(authConfig ? { authConfigs: { [slug]: authConfig.id } } : {}),

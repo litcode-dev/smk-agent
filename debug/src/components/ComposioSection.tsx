@@ -104,7 +104,7 @@ const BYO_PORTALS: Record<string, { label: string; url: string; note?: string }>
 
 const COMPOSIO_DASHBOARD_URL = "https://dashboard.composio.dev";
 
-const INTRO_DISMISSED_KEY = "boop:connections:intro-dismissed";
+const INTRO_DISMISSED_KEY = "zance:connections:intro-dismissed";
 const TOAST_TIMEOUT_MS = 6000;
 
 interface ToastState {

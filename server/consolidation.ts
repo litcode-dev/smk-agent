@@ -97,8 +97,8 @@ interface Challenge {
   severity: "low" | "medium" | "high";
 }
 
-const ADVERSARY_MODEL = process.env.BOOP_ADVERSARY_MODEL ?? "claude-haiku-4-5";
-const DEFAULT_MODEL = process.env.BOOP_MODEL ?? "claude-sonnet-4-6";
+const ADVERSARY_MODEL = process.env.ZANCE_ADVERSARY_MODEL ?? "claude-haiku-4-5";
+const DEFAULT_MODEL = process.env.ZANCE_MODEL ?? "claude-sonnet-4-6";
 
 interface Decision {
   proposalIndex: number;

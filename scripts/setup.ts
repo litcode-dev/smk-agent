@@ -295,7 +295,7 @@ async function importSendblueFromCli(): Promise<SendblueKeys | null> {
           const { pickedNumber } = await prompts({
             type: "select",
             name: "pickedNumber",
-            message: "You have multiple Sendblue numbers — which one should Boop reply from?",
+            message: "You have multiple Sendblue numbers — which one should Zance reply from?",
             choices: phones.map((p) => ({ title: p, value: p })),
             initial: 0,
           });
@@ -318,7 +318,7 @@ async function importSendblueFromCli(): Promise<SendblueKeys | null> {
 }
 
 async function main() {
-  banner("boop-agent setup");
+  banner("zance-agent setup");
 
   console.log(`
 What this does:
@@ -374,7 +374,7 @@ Before you start:
       ...sendbluePrompts,
       {
         type: "select",
-        name: "BOOP_MODEL",
+        name: "ZANCE_MODEL",
         message: "Which Claude model should the agent use?",
         choices: [
           { title: "claude-sonnet-4-6 (recommended)", value: "claude-sonnet-4-6" },
@@ -505,7 +505,7 @@ re-pasting into Sendblue every time. For a stable URL, pick one of:
     const { NGROK_DOMAIN } = await prompts({
       type: "text",
       name: "NGROK_DOMAIN",
-      message: "Your ngrok reserved domain (e.g. boop.ngrok.app, no https://):",
+      message: "Your ngrok reserved domain (e.g. zance.ngrok.app, no https://):",
       initial: existing.NGROK_DOMAIN ?? "",
     });
     const clean = (NGROK_DOMAIN ?? "").replace(/^https?:\/\//, "").replace(/\/$/, "");
@@ -517,7 +517,7 @@ re-pasting into Sendblue every time. For a stable URL, pick one of:
     const { PUBLIC_URL } = await prompts({
       type: "text",
       name: "PUBLIC_URL",
-      message: "Your stable public URL (e.g. https://boop.mydomain.com):",
+      message: "Your stable public URL (e.g. https://zance.mydomain.com):",
       initial: existing.PUBLIC_URL ?? "",
     });
     if (PUBLIC_URL) {

@@ -14,7 +14,7 @@ function randomId(prefix: string): string {
  */
 export function createDraftStagingMcp(conversationId: string) {
   return createSdkMcpServer({
-    name: "boop-drafts",
+    name: "zance-drafts",
     version: "0.1.0",
     tools: [
       tool(
@@ -58,7 +58,7 @@ ALWAYS call this instead of sending or creating something directly. The user wil
  */
 export function createDraftDecisionMcp(conversationId: string) {
   return createSdkMcpServer({
-    name: "boop-draft-decisions",
+    name: "zance-draft-decisions",
     version: "0.1.0",
     tools: [
       tool(

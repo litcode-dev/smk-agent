@@ -29,7 +29,7 @@ function makeProgressHandler(conversationId: string, turnId: string): ProgressHa
   };
 }
 
-const INTERACTION_SYSTEM = `You are Boop, a personal agent the user texts from iMessage.
+const INTERACTION_SYSTEM = `You are Zance, a personal agent the user texts from iMessage.
 
 You are a DISPATCHER, not a doer. Your job:
 1. Understand what the user wants.
@@ -128,7 +128,7 @@ Self-inspection (no spawn needed — answer instantly):
 - "What integrations / accounts are connected?" / "Which Gmail account?" → list_integrations
 - "Is there a tool for X?" / "Can you connect to Y?" → search_composio_catalog
 - "Is Slack connected?" / "What tools does Notion expose?" → inspect_toolkit (set includeTools=true if they want the tool list)
-Use these tools when the user asks about Boop's own configuration, connected
+Use these tools when the user asks about Zance's own configuration, connected
 accounts, or whether a service is reachable. They're cheap and synchronous —
 no ack required.
 
@@ -165,7 +165,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
   const selfServer = createSelfMcp();
 
   const ackServer = createSdkMcpServer({
-    name: "boop-ack",
+    name: "zance-ack",
     version: "0.1.0",
     tools: [
       tool(
@@ -207,7 +207,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
   const integrationList = integrations.join(", ") || "(none)";
 
   const spawnServer = createSdkMcpServer({
-    name: "boop-spawn",
+    name: "zance-spawn",
     version: "0.1.0",
     tools: [
       tool(
@@ -314,31 +314,30 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
         systemPrompt,
         model: requestedModel,
         mcpServers: {
-          "boop-memory": memoryServer,
-          "boop-spawn": spawnServer,
-          "boop-automations": automationServer,
-          "boop-draft-decisions": draftDecisionServer,
-          "boop-ack": ackServer,
-          "boop-self": selfServer,
+          "zance-memory": memoryServer,
+          "zance-spawn": spawnServer,
+          "zance-automations": automationServer,
+          "zance-draft-decisions": draftDecisionServer,
+          "zance-ack": ackServer,
+          "zance-self": selfServer,
         },
         allowedTools: [
-          "mcp__boop-memory__write_memory",
-          "mcp__boop-memory__recall",
-          "mcp__boop-spawn__spawn_agent",
-          "mcp__boop-spawn__spawn_agents_parallel",
-          "mcp__boop-automations__create_automation",
-          "mcp__boop-automations__list_automations",
-          "mcp__boop-automations__toggle_automation",
-          "mcp__boop-automations__delete_automation",
-          "mcp__boop-draft-decisions__list_drafts",
-          "mcp__boop-draft-decisions__send_draft",
-          "mcp__boop-draft-decisions__reject_draft",
-          "mcp__boop-ack__send_ack",
-          "mcp__boop-self__get_config",
-          "mcp__boop-self__set_model",
-          "mcp__boop-self__list_integrations",
-          "mcp__boop-self__search_composio_catalog",
-          "mcp__boop-self__inspect_toolkit",
+          "mcp__zance-memory__write_memory",
+          "mcp__zance-memory__recall",
+          "mcp__zance-spawn__spawn_agent",
+          "mcp__zance-automations__create_automation",
+          "mcp__zance-automations__list_automations",
+          "mcp__zance-automations__toggle_automation",
+          "mcp__zance-automations__delete_automation",
+          "mcp__zance-draft-decisions__list_drafts",
+          "mcp__zance-draft-decisions__send_draft",
+          "mcp__zance-draft-decisions__reject_draft",
+          "mcp__zance-ack__send_ack",
+          "mcp__zance-self__get_config",
+          "mcp__zance-self__set_model",
+          "mcp__zance-self__list_integrations",
+          "mcp__zance-self__search_composio_catalog",
+          "mcp__zance-self__inspect_toolkit",
         ],
         // Belt-and-suspenders: even with bypassPermissions the SDK can leak
         // its built-ins if we only whitelist. Explicitly block them on the
@@ -364,7 +363,7 @@ export async function handleUserMessage(opts: HandleOpts): Promise<string> {
             reply += block.text;
             opts.onThinking?.(block.text);
           } else if (block.type === "tool_use") {
-            const name = block.name.replace(/^mcp__boop-[a-z-]+__/, "");
+            const name = block.name.replace(/^mcp__zance-[a-z-]+__/, "");
             const inputPreview = JSON.stringify(block.input);
             log(
               `tool: ${name}(${inputPreview.length > 90 ? inputPreview.slice(0, 90) + "…" : inputPreview})`,

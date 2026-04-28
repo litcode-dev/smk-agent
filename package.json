@@ -1,5 +1,5 @@
 {
-  "name": "boop-agent",
+  "name": "zance-agent",
   "version": "0.1.0",
   "private": true,
   "description": "Text-an-agent starter: iMessage your Claude agent, it runs sub-agents, remembers you, and grows with integrations you add.",

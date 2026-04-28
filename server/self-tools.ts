@@ -17,18 +17,18 @@ import {
 
 export function createSelfMcp() {
   return createSdkMcpServer({
-    name: "boop-self",
+    name: "zance-self",
     version: "0.1.0",
     tools: [
       tool(
         "get_config",
-        "Return Boop's runtime configuration: which Claude model it's using, which integrations are loaded, and basic env info. Use when the user asks 'what model are you?', 'what version?', or anything about the agent itself.",
+        "Return Zance's runtime configuration: which Claude model it's using, which integrations are loaded, and basic env info. Use when the user asks 'what model are you?', 'what version?', or anything about the agent itself.",
         {},
         async () => {
           const integrations = availableIntegrations();
           const config = {
             model: await getRuntimeModel(),
-            envDefault: process.env.BOOP_MODEL ?? "claude-sonnet-4-6",
+            envDefault: process.env.ZANCE_MODEL ?? "claude-sonnet-4-6",
             availableModels: [...KNOWN_MODELS],
             integrationsLoaded: integrations,
             integrationCount: integrations.length,

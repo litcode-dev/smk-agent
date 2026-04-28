@@ -2,11 +2,11 @@
 // Background check that nudges the user when upstream has new commits.
 // Runs in parallel with dev.mjs startup; silent on no-op or failure.
 //
-// Opt out: set BOOP_UPSTREAM_CHECK=false in .env.local, or comment out the
+// Opt out: set ZANCE_UPSTREAM_CHECK=false in .env.local, or comment out the
 // `spawn("node", ["scripts/check-upstream.mjs"], ...)` block in scripts/dev.mjs.
 //
 // Behavior matrix:
-//   - BOOP_UPSTREAM_CHECK=false → silent (disabled)
+//   - ZANCE_UPSTREAM_CHECK=false → silent (disabled)
 //   - upstream remote + new commits → banner w/ count + /upgrade-boop instruction
 //   - upstream remote, up to date   → silent
 //   - no upstream + forked origin   → one-line hint on how to add upstream
@@ -113,7 +113,7 @@ function readEnvLocal() {
 
 const envFromFile = readEnvLocal();
 const upstreamCheckEnabled =
-  (process.env.BOOP_UPSTREAM_CHECK ?? envFromFile.BOOP_UPSTREAM_CHECK ?? "true") !== "false";
+  (process.env.ZANCE_UPSTREAM_CHECK ?? envFromFile.ZANCE_UPSTREAM_CHECK ?? "true") !== "false";
 if (!upstreamCheckEnabled) process.exit(0);
 
 (async () => {

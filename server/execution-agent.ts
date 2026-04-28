@@ -127,7 +127,7 @@ export async function spawnExecutionAgent(opts: SpawnOptions): Promise<SpawnResu
     : undefined;
   const mcpServers = {
     ...integrationServers,
-    ...(draftServer ? { "boop-drafts": draftServer } : {}),
+    ...(draftServer ? { "zance-drafts": draftServer } : {}),
   };
   const allowedTools = [
     "WebSearch",

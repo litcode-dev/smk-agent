@@ -1,0 +1,191 @@
+<h2>Which visual direction feels right?</h2>
+<p class="subtitle">Three distinct takes on "industry standard" for a developer debug dashboard</p>
+
+<div class="cards" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+
+  <!-- Option A: Linear / Vercel -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0a0a0a; padding:16px; border-radius:6px; font-family:'SF Mono',monospace; min-height:220px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px; border-bottom:1px solid #1f1f1f; padding-bottom:10px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></div>
+        <span style="color:#888; font-size:10px; letter-spacing:0.1em; text-transform:uppercase;">Fizz Debug</span>
+        <div style="margin-left:auto; display:flex; gap:12px;">
+          <span style="color:#555; font-size:10px;">Dashboard</span>
+          <span style="color:#aaa; font-size:10px; border-bottom:1px solid #aaa; padding-bottom:1px;">Agents</span>
+          <span style="color:#555; font-size:10px;">Memory</span>
+          <span style="color:#555; font-size:10px;">Events</span>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px;">
+        <div style="padding:10px; border:1px solid #1f1f1f; border-radius:4px;">
+          <div style="color:#555; font-size:9px; text-transform:uppercase; letter-spacing:0.08em;">Agents</div>
+          <div style="color:#fff; font-size:18px; font-weight:600; margin-top:4px;">24</div>
+          <div style="color:#555; font-size:9px; margin-top:2px;">↑ 3 running</div>
+        </div>
+        <div style="padding:10px; border:1px solid #1f1f1f; border-radius:4px;">
+          <div style="color:#555; font-size:9px; text-transform:uppercase; letter-spacing:0.08em;">Cost</div>
+          <div style="color:#fff; font-size:18px; font-weight:600; margin-top:4px;">$1.24</div>
+          <div style="color:#555; font-size:9px; margin-top:2px;">7d total</div>
+        </div>
+        <div style="padding:10px; border:1px solid #1f1f1f; border-radius:4px;">
+          <div style="color:#555; font-size:9px; text-transform:uppercase; letter-spacing:0.08em;">Memories</div>
+          <div style="color:#fff; font-size:18px; font-weight:600; margin-top:4px;">312</div>
+          <div style="color:#555; font-size:9px; margin-top:2px;">↑ 18 today</div>
+        </div>
+      </div>
+      <div style="border:1px solid #1f1f1f; border-radius:4px; padding:10px;">
+        <div style="color:#555; font-size:9px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Recent agents</div>
+        <div style="display:flex; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid #111;">
+          <div style="width:5px;height:5px;border-radius:50%;background:#22c55e; flex-shrink:0;"></div>
+          <span style="color:#aaa; font-size:10px; flex:1;">search: flight prices NYC→LA</span>
+          <span style="color:#555; font-size:9px;">$0.08</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid #111;">
+          <div style="width:5px;height:5px;border-radius:50%;background:#3b82f6; flex-shrink:0;"></div>
+          <span style="color:#aaa; font-size:10px; flex:1;">gmail: draft reply to Sarah</span>
+          <span style="color:#555; font-size:9px;">$0.12</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; padding:4px 0;">
+          <div style="width:5px;height:5px;border-radius:50%;background:#22c55e; flex-shrink:0;"></div>
+          <span style="color:#aaa; font-size:10px; flex:1;">calendar: find open slot</span>
+          <span style="color:#555; font-size:9px;">$0.04</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Minimal / Linear</h3>
+      <p>Pure black, hairline borders, monospace everywhere. Heavily inspired by Linear, Vercel, and Raycast. Maximum information density with zero decoration. Type-forward, data-driven.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Supabase / Planetscale -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a; padding:16px; border-radius:6px; min-height:220px; display:flex; gap:12px;">
+      <div style="width:140px; flex-shrink:0; border-right:1px solid #1e293b; padding-right:12px;">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:20px;">
+          <div style="width:22px;height:22px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#8b5cf6); display:flex; align-items:center; justify-content:center;">
+            <span style="color:#fff; font-size:10px; font-weight:700;">F</span>
+          </div>
+          <span style="color:#e2e8f0; font-size:12px; font-weight:600;">Fizz</span>
+        </div>
+        <div style="margin-bottom:4px; padding:6px 8px; border-radius:5px; background:#1e293b; display:flex; align-items:center; gap:7px;">
+          <div style="width:14px;height:14px;background:#334155; border-radius:3px;"></div>
+          <span style="color:#e2e8f0; font-size:10px;">Dashboard</span>
+        </div>
+        <div style="margin-bottom:4px; padding:6px 8px; border-radius:5px; display:flex; align-items:center; gap:7px;">
+          <div style="width:14px;height:14px;background:#334155; border-radius:3px;"></div>
+          <span style="color:#94a3b8; font-size:10px;">Agents</span>
+          <span style="margin-left:auto; background:#6366f1; color:#fff; font-size:8px; padding:1px 5px; border-radius:10px;">3</span>
+        </div>
+        <div style="margin-bottom:4px; padding:6px 8px; border-radius:5px; display:flex; align-items:center; gap:7px;">
+          <div style="width:14px;height:14px;background:#334155; border-radius:3px;"></div>
+          <span style="color:#94a3b8; font-size:10px;">Memory</span>
+        </div>
+        <div style="margin-bottom:4px; padding:6px 8px; border-radius:5px; display:flex; align-items:center; gap:7px;">
+          <div style="width:14px;height:14px;background:#334155; border-radius:3px;"></div>
+          <span style="color:#94a3b8; font-size:10px;">Automations</span>
+        </div>
+        <div style="margin-bottom:4px; padding:6px 8px; border-radius:5px; display:flex; align-items:center; gap:7px;">
+          <div style="width:14px;height:14px;background:#334155; border-radius:3px;"></div>
+          <span style="color:#94a3b8; font-size:10px;">Events</span>
+        </div>
+      </div>
+      <div style="flex:1; min-width:0;">
+        <div style="color:#e2e8f0; font-size:12px; font-weight:600; margin-bottom:12px;">Overview</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+          <div style="padding:10px; background:#1e293b; border-radius:8px; border:1px solid #334155;">
+            <div style="color:#94a3b8; font-size:9px;">TOTAL COST</div>
+            <div style="color:#e2e8f0; font-size:16px; font-weight:700; margin-top:3px;">$1.24</div>
+            <div style="color:#22c55e; font-size:9px; margin-top:2px;">↑ 12% vs last week</div>
+          </div>
+          <div style="padding:10px; background:#1e293b; border-radius:8px; border:1px solid #334155;">
+            <div style="color:#94a3b8; font-size:9px;">SUCCESS RATE</div>
+            <div style="color:#e2e8f0; font-size:16px; font-weight:700; margin-top:3px;">96.2%</div>
+            <div style="color:#22c55e; font-size:9px; margin-top:2px;">↑ 2% improvement</div>
+          </div>
+        </div>
+        <div style="background:#1e293b; border-radius:8px; border:1px solid #334155; padding:10px;">
+          <div style="color:#94a3b8; font-size:9px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">Active Agents</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#6366f1;"></div>
+            <span style="color:#e2e8f0; font-size:10px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">search: weather forecast Tokyo</span>
+            <span style="background:#1d4ed8/20; color:#60a5fa; font-size:8px; padding:1px 5px; border-radius:4px; white-space:nowrap;">running</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#6366f1;"></div>
+            <span style="color:#e2e8f0; font-size:10px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">gmail: summarize thread</span>
+            <span style="background:#1d4ed8/20; color:#60a5fa; font-size:8px; padding:1px 5px; border-radius:4px; white-space:nowrap;">running</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Structured / Supabase</h3>
+      <p>Indigo accent on dark slate, icon-led sidebar nav, card-based content areas. Inspired by Supabase, PlanetScale, Railway. Polished with clear visual hierarchy, subtle gradients, and status badges.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Datadog / Grafana -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#111827; padding:14px; border-radius:6px; min-height:220px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div style="display:flex; gap:10px;">
+          <span style="color:#9ca3af; font-size:10px; padding:3px 8px; border-radius:4px; background:#1f2937; border:1px solid #374151;">Dashboard</span>
+          <span style="color:#e5e7eb; font-size:10px; padding:3px 8px; border-radius:4px; background:#374151; border:1px solid #4b5563;">Agents</span>
+          <span style="color:#9ca3af; font-size:10px; padding:3px 8px; border-radius:4px; background:#1f2937; border:1px solid #374151;">Memory</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span style="color:#9ca3af; font-size:9px;">Last 24h</span>
+          <div style="width:1px; height:12px; background:#374151;"></div>
+          <span style="color:#f87171; font-size:9px;">● Live</span>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px; margin-bottom:10px;">
+        <div style="padding:8px; background:#1f2937; border-radius:4px; border-top:2px solid #3b82f6;">
+          <div style="color:#9ca3af; font-size:8px;">AGENTS RUN</div>
+          <div style="color:#e5e7eb; font-size:16px; font-weight:700; margin-top:2px;">142</div>
+        </div>
+        <div style="padding:8px; background:#1f2937; border-radius:4px; border-top:2px solid #10b981;">
+          <div style="color:#9ca3af; font-size:8px;">SUCCESS</div>
+          <div style="color:#e5e7eb; font-size:16px; font-weight:700; margin-top:2px;">96.5%</div>
+        </div>
+        <div style="padding:8px; background:#1f2937; border-radius:4px; border-top:2px solid #f59e0b;">
+          <div style="color:#9ca3af; font-size:8px;">AVG COST</div>
+          <div style="color:#e5e7eb; font-size:16px; font-weight:700; margin-top:2px;">$0.09</div>
+        </div>
+        <div style="padding:8px; background:#1f2937; border-radius:4px; border-top:2px solid #8b5cf6;">
+          <div style="color:#9ca3af; font-size:8px;">MEMORIES</div>
+          <div style="color:#e5e7eb; font-size:16px; font-weight:700; margin-top:2px;">312</div>
+        </div>
+      </div>
+      <div style="background:#1f2937; border-radius:4px; padding:10px;">
+        <div style="color:#9ca3af; font-size:9px; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.1em;">Agent runs — last 24h</div>
+        <div style="display:flex; align-items:flex-end; gap:3px; height:40px;">
+          <div style="flex:1; background:#3b82f6; height:60%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:80%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:40%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:90%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#ef4444; height:20%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:70%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:100%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:55%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:75%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:85%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#3b82f6; height:50%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+          <div style="flex:1; background:#ef4444; height:30%; border-radius:2px 2px 0 0; opacity:0.7;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:3px;">
+          <span style="color:#4b5563; font-size:8px;">12am</span>
+          <span style="color:#4b5563; font-size:8px;">6am</span>
+          <span style="color:#4b5563; font-size:8px;">12pm</span>
+          <span style="color:#4b5563; font-size:8px;">now</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Dense / Datadog</h3>
+      <p>Tab-bar nav, metric cards with color-coded top borders, compact charts, live indicator. Inspired by Datadog, Grafana, Axiom. Maximizes data visibility at a glance — feels like a proper ops dashboard.</p>
+    </div>
+  </div>
+
+</div>

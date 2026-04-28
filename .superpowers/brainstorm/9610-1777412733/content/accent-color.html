@@ -1,0 +1,114 @@
+<h2>Which accent color fits the agent?</h2>
+<p class="subtitle">This becomes the primary color for active states, badges, buttons, and highlights across the whole UI</p>
+
+<div class="cards" style="grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+  <!-- Violet -->
+  <div class="card" data-choice="violet" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a; padding:14px; border-radius:6px; min-height:160px;">
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px;">
+        <div style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#7c3aed,#8b5cf6); flex-shrink:0;"></div>
+        <span style="color:#e2e8f0; font-size:11px; font-weight:600;">Agent</span>
+        <span style="margin-left:auto; background:#7c3aed; color:#fff; font-size:8px; padding:2px 6px; border-radius:10px; font-weight:600;">3 live</span>
+      </div>
+      <div style="border-left:2px solid #7c3aed; padding-left:10px; margin-bottom:8px;">
+        <div style="color:#e2e8f0; font-size:10px;">search: flight NYC→LA</div>
+        <div style="color:#a78bfa; font-size:9px; margin-top:2px;">running · $0.08</div>
+      </div>
+      <div style="padding:8px; background:#1e293b; border-radius:6px; border:1px solid #7c3aed30;">
+        <div style="background:#7c3aed; height:3px; border-radius:2px; width:65%;"></div>
+        <div style="color:#94a3b8; font-size:9px; margin-top:4px;">65% memory capacity</div>
+      </div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <button style="flex:1; background:#7c3aed; color:#fff; border:none; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer; font-weight:600;">Connect</button>
+        <button style="flex:1; background:transparent; color:#a78bfa; border:1px solid #7c3aed50; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer;">Details</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3 style="color:#a78bfa;">Violet</h3>
+      <p>Creative, technical. Feels like AI tooling. Common in ML/LLM products (Replicate, Vercel AI SDK).</p>
+    </div>
+  </div>
+
+  <!-- Sky/Cyan -->
+  <div class="card" data-choice="sky" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a; padding:14px; border-radius:6px; min-height:160px;">
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px;">
+        <div style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#0284c7,#38bdf8); flex-shrink:0;"></div>
+        <span style="color:#e2e8f0; font-size:11px; font-weight:600;">Agent</span>
+        <span style="margin-left:auto; background:#0284c7; color:#fff; font-size:8px; padding:2px 6px; border-radius:10px; font-weight:600;">3 live</span>
+      </div>
+      <div style="border-left:2px solid #0284c7; padding-left:10px; margin-bottom:8px;">
+        <div style="color:#e2e8f0; font-size:10px;">search: flight NYC→LA</div>
+        <div style="color:#38bdf8; font-size:9px; margin-top:2px;">running · $0.08</div>
+      </div>
+      <div style="padding:8px; background:#1e293b; border-radius:6px; border:1px solid #0284c730;">
+        <div style="background:#0284c7; height:3px; border-radius:2px; width:65%;"></div>
+        <div style="color:#94a3b8; font-size:9px; margin-top:4px;">65% memory capacity</div>
+      </div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <button style="flex:1; background:#0284c7; color:#fff; border:none; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer; font-weight:600;">Connect</button>
+        <button style="flex:1; background:transparent; color:#38bdf8; border:1px solid #0284c750; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer;">Details</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3 style="color:#38bdf8;">Sky Blue</h3>
+      <p>Calm, trustworthy, technical. Feels like infra and observability tools (Cloudflare, Axiom, Linear).</p>
+    </div>
+  </div>
+
+  <!-- Emerald -->
+  <div class="card" data-choice="emerald" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a; padding:14px; border-radius:6px; min-height:160px;">
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px;">
+        <div style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#059669,#34d399); flex-shrink:0;"></div>
+        <span style="color:#e2e8f0; font-size:11px; font-weight:600;">Agent</span>
+        <span style="margin-left:auto; background:#059669; color:#fff; font-size:8px; padding:2px 6px; border-radius:10px; font-weight:600;">3 live</span>
+      </div>
+      <div style="border-left:2px solid #059669; padding-left:10px; margin-bottom:8px;">
+        <div style="color:#e2e8f0; font-size:10px;">search: flight NYC→LA</div>
+        <div style="color:#34d399; font-size:9px; margin-top:2px;">running · $0.08</div>
+      </div>
+      <div style="padding:8px; background:#1e293b; border-radius:6px; border:1px solid #05996930;">
+        <div style="background:#059669; height:3px; border-radius:2px; width:65%;"></div>
+        <div style="color:#94a3b8; font-size:9px; margin-top:4px;">65% memory capacity</div>
+      </div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <button style="flex:1; background:#059669; color:#fff; border:none; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer; font-weight:600;">Connect</button>
+        <button style="flex:1; background:transparent; color:#34d399; border:1px solid #05996950; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer;">Details</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3 style="color:#34d399;">Emerald</h3>
+      <p>Fresh, alive, online. Feels like live systems and status dashboards (Supabase, Fly.io, Vercel).</p>
+    </div>
+  </div>
+
+  <!-- Amber/Orange -->
+  <div class="card" data-choice="amber" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f172a; padding:14px; border-radius:6px; min-height:160px;">
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px;">
+        <div style="width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#d97706,#fbbf24); flex-shrink:0;"></div>
+        <span style="color:#e2e8f0; font-size:11px; font-weight:600;">Agent</span>
+        <span style="margin-left:auto; background:#d97706; color:#fff; font-size:8px; padding:2px 6px; border-radius:10px; font-weight:600;">3 live</span>
+      </div>
+      <div style="border-left:2px solid #d97706; padding-left:10px; margin-bottom:8px;">
+        <div style="color:#e2e8f0; font-size:10px;">search: flight NYC→LA</div>
+        <div style="color:#fbbf24; font-size:9px; margin-top:2px;">running · $0.08</div>
+      </div>
+      <div style="padding:8px; background:#1e293b; border-radius:6px; border:1px solid #d9770630;">
+        <div style="background:#d97706; height:3px; border-radius:2px; width:65%;"></div>
+        <div style="color:#94a3b8; font-size:9px; margin-top:4px;">65% memory capacity</div>
+      </div>
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <button style="flex:1; background:#d97706; color:#fff; border:none; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer; font-weight:600;">Connect</button>
+        <button style="flex:1; background:transparent; color:#fbbf24; border:1px solid #d9770650; border-radius:5px; padding:5px 0; font-size:9px; cursor:pointer;">Details</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3 style="color:#fbbf24;">Amber</h3>
+      <p>Warm, energetic, distinctive. Less common — stands out from the blue/purple sea (Resend, Trigger.dev).</p>
+    </div>
+  </div>
+
+</div>

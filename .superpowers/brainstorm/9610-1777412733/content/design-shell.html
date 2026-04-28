@@ -1,0 +1,180 @@
+<h2>Design Section 1 of 3 — Shell & Navigation</h2>
+<p class="subtitle">The frame every panel lives inside. Does this feel right?</p>
+
+<div class="split">
+
+  <div class="mockup">
+    <div class="mockup-header">Before (current)</div>
+    <div class="mockup-body" style="background:#020617; min-height:340px; font-family:system-ui; display:flex; flex-direction:column;">
+      <!-- Current header - cluttered -->
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 20px; border-bottom:1px solid #1e293b; background:#020617;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:28px;height:28px;border-radius:8px;background:#334155;"></div>
+          <span style="color:#64748b; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Zance Debug</span>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;"></div>
+            <span style="color:#22c55e; font-size:10px;">Live</span>
+          </div>
+        </div>
+        <!-- Memory pills cluttering header -->
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="display:flex; gap:12px; align-items:center;">
+            <span style="color:#94a3b8; font-size:10px;">Short <strong style="color:#e2e8f0;">47</strong></span>
+            <span style="color:#94a3b8; font-size:10px;">Long <strong style="color:#e2e8f0;">128</strong></span>
+            <span style="color:#fbbf24; font-size:10px;">Perm <strong>31</strong></span>
+          </div>
+          <div style="width:28px;height:28px;border-radius:6px;background:#1e293b; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#64748b; font-size:12px;">☀</span>
+          </div>
+        </div>
+      </div>
+      <!-- Current sidebar - no accent, flat active -->
+      <div style="display:flex; flex:1; min-height:0;">
+        <nav style="width:168px; border-right:1px solid #1e293b; padding:6px 0; background:#02061780;">
+          <div style="padding:8px 16px; font-size:13px; color:#fff; background:#1e293b; display:flex; align-items:center; gap:10px;">
+            <div style="width:18px;height:18px;background:#334155;border-radius:3px;"></div> Dashboard
+          </div>
+          <div style="padding:8px 16px; font-size:13px; color:#64748b; display:flex; align-items:center; gap:10px;">
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:3px;"></div> Agents
+            <span style="margin-left:auto; background:#0ea5e9; color:#fff; font-size:9px; padding:2px 5px; border-radius:8px;">3</span>
+          </div>
+          <div style="padding:8px 16px; font-size:13px; color:#64748b; display:flex; align-items:center; gap:10px;">
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:3px;"></div> Automations
+          </div>
+          <div style="padding:8px 16px; font-size:13px; color:#64748b; display:flex; align-items:center; gap:10px;">
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:3px;"></div> Memory
+          </div>
+          <div style="padding:8px 16px; font-size:13px; color:#64748b; display:flex; align-items:center; gap:10px;">
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:3px;"></div> Events
+          </div>
+          <div style="padding:8px 16px; font-size:13px; color:#64748b; display:flex; align-items:center; gap:10px;">
+            <div style="width:18px;height:18px;background:#1e293b;border-radius:3px;"></div> Connections
+          </div>
+        </nav>
+        <div style="flex:1; padding:16px; background:#020617;">
+          <div style="color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">Dashboard</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <div style="padding:12px; background:#0f172a; border:1px solid #1e293b; border-radius:8px;">
+              <div style="color:#475569; font-size:9px; text-transform:uppercase;">Messages</div>
+              <div style="color:#e2e8f0; font-size:20px; font-weight:700; margin-top:4px;">142</div>
+            </div>
+            <div style="padding:12px; background:#0f172a; border:1px solid #1e293b; border-radius:8px;">
+              <div style="color:#475569; font-size:9px; text-transform:uppercase;">Cost</div>
+              <div style="color:#e2e8f0; font-size:20px; font-weight:700; margin-top:4px;">$4.82</div>
+            </div>
+            <div style="padding:12px; background:#0f172a; border:1px solid #1e293b; border-radius:8px;">
+              <div style="color:#475569; font-size:9px; text-transform:uppercase;">Agents</div>
+              <div style="color:#e2e8f0; font-size:20px; font-weight:700; margin-top:4px;">38</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">After (proposed)</div>
+    <div class="mockup-body" style="background:#020617; min-height:340px; font-family:system-ui; display:flex; flex-direction:column;">
+      <!-- Clean header -->
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 20px; border-bottom:1px solid #0f172a; background:#020617;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#10b981,#059669); display:flex; align-items:center; justify-content:center;">
+            <span style="color:#fff; font-size:11px; font-weight:800;">Z</span>
+          </div>
+          <span style="color:#f1f5f9; font-size:13px; font-weight:600;">Zance</span>
+          <span style="color:#334155; font-size:13px;">·</span>
+          <span style="color:#64748b; font-size:12px;">debug</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="display:flex; align-items:center; gap:5px; background:#052e16; border:1px solid #14532d; border-radius:20px; padding:3px 8px;">
+            <div style="width:5px;height:5px;border-radius:50%;background:#10b981;box-shadow:0 0 4px #10b981;"></div>
+            <span style="color:#10b981; font-size:10px; font-weight:500;">Live</span>
+          </div>
+          <div style="width:26px;height:26px;border-radius:6px;background:#0f172a; border:1px solid #1e293b; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <span style="color:#64748b; font-size:11px;">☀</span>
+          </div>
+        </div>
+      </div>
+      <!-- New sidebar - emerald accent, cleaner -->
+      <div style="display:flex; flex:1; min-height:0;">
+        <nav style="width:196px; border-right:1px solid #0f172a; padding:8px 0; background:#020617; flex-shrink:0;">
+          <!-- Active item: emerald left border + subtle bg -->
+          <div style="position:relative; display:flex; align-items:center; gap:10px; padding:8px 16px; font-size:12.5px; color:#f1f5f9; font-weight:500; background:#052e1680;">
+            <div style="position:absolute; left:0; top:0; bottom:0; width:2.5px; background:#10b981; border-radius:0 2px 2px 0;"></div>
+            <div style="width:16px;height:16px;background:#10b98130;border-radius:4px; display:flex; align-items:center; justify-content:center; color:#10b981; font-size:10px;">▦</div>
+            Dashboard
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 16px; font-size:12.5px; color:#475569;">
+            <div style="width:16px;height:16px;border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px;">🤖</div>
+            Agents
+            <span style="margin-left:auto; background:#10b981; color:#052e16; font-size:9px; padding:1px 6px; border-radius:10px; font-weight:700;">3</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 16px; font-size:12.5px; color:#475569;">
+            <div style="width:16px;height:16px;border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px;">⏱</div>
+            Automations
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 16px; font-size:12.5px; color:#475569;">
+            <div style="width:16px;height:16px;border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px;">🧠</div>
+            Memory
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 16px; font-size:12.5px; color:#475569;">
+            <div style="width:16px;height:16px;border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px;">⚡</div>
+            Events
+          </div>
+          <div style="border-top:1px solid #0f172a; margin:6px 0;"></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:8px 16px; font-size:12.5px; color:#475569;">
+            <div style="width:16px;height:16px;border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px;">🔗</div>
+            Connections
+          </div>
+        </nav>
+        <!-- Content area - better cards -->
+        <div style="flex:1; padding:20px; background:#020617; overflow:hidden;">
+          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:16px;">
+            <span style="color:#f1f5f9; font-size:14px; font-weight:600;">Dashboard</span>
+            <span style="color:#1e293b; font-size:10px;">·</span>
+            <span style="color:#475569; font-size:11px;">Last 7 days</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <div style="padding:12px; background:#0f172a; border:1px solid #1e293b; border-radius:10px;">
+              <div style="color:#475569; font-size:9px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Total Cost</div>
+              <div style="color:#f1f5f9; font-size:20px; font-weight:700;">$4.82</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+                <span style="color:#10b981; font-size:10px;">↑ 12%</span>
+                <span style="color:#334155; font-size:9px;">vs last week</span>
+              </div>
+            </div>
+            <div style="padding:12px; background:#0f172a; border:1px solid #1e293b; border-radius:10px;">
+              <div style="color:#475569; font-size:9px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Agents Run</div>
+              <div style="color:#f1f5f9; font-size:20px; font-weight:700;">38</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+                <span style="color:#10b981; font-size:10px;">↑ 5</span>
+                <span style="color:#334155; font-size:9px;">vs last week</span>
+              </div>
+            </div>
+            <div style="padding:12px; background:#0f172a; border:1px solid #1e293b; border-radius:10px;">
+              <div style="color:#475569; font-size:9px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Success Rate</div>
+              <div style="color:#f1f5f9; font-size:20px; font-weight:700;">96.1%</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+                <span style="color:#f87171; font-size:10px;">↓ 1.2%</span>
+                <span style="color:#334155; font-size:9px;">vs last week</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>Key shell changes</h3>
+  <ul>
+    <li><strong>Header decluttered</strong> — memory pill counts moved to the Memory panel where they belong. Header shows only: logo, agent name, live status pill, theme toggle.</li>
+    <li><strong>Live indicator</strong> — becomes a pill with a glowing emerald dot instead of a bare dot + text.</li>
+    <li><strong>Sidebar active state</strong> — emerald left-border accent + very subtle tinted background instead of the current flat grey highlight.</li>
+    <li><strong>Sidebar width</strong> — 168px → 196px, giving labels room to breathe and adding a divider before Connections.</li>
+    <li><strong>Agent badge</strong> — stays, but uses emerald with dark green text instead of sky blue.</li>
+    <li><strong>Stat cards</strong> — rounded-xl instead of rounded-lg, trend arrows with color-coded delta.</li>
+  </ul>
+</div>
