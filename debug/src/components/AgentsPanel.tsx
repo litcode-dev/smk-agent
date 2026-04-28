@@ -227,11 +227,7 @@ function AgentDetail({
       >
         <button
           onClick={onBack}
-          className={`text-xs rounded-md px-2.5 py-1 transition-colors ${
-            isDark
-              ? "text-slate-400 hover:text-slate-200 bg-slate-800 hover:bg-slate-700"
-              : "text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200"
-          }`}
+          className={`text-xs rounded-md px-2.5 py-1 transition-colors ${t.textSecondary} ${isDark ? "bg-slate-800 hover:bg-slate-700 hover:text-slate-200" : "bg-slate-100 hover:bg-slate-200 hover:text-slate-700"}`}
         >
           ← Back
         </button>
@@ -285,14 +281,12 @@ function AgentDetail({
             </span>
             {!requestOpen && (
               <span
-                className={`text-xs truncate min-w-0 ${
-                  isDark ? "text-slate-500" : "text-slate-400"
-                }`}
+                className={`text-xs truncate min-w-0 ${t.textMuted}`}
               >
                 {agent.task}
               </span>
             )}
-            <span className={`ml-auto shrink-0 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+            <span className={`ml-auto shrink-0 ${t.textMuted}`}>
               {requestOpen ? "▲" : "▼"}
             </span>
           </button>
@@ -318,9 +312,7 @@ function AgentDetail({
             }`}
           >
             <span
-              className={`text-[10px] font-bold mono tracking-wider ${
-                isDark ? "text-slate-500" : "text-slate-400"
-              }`}
+              className={`text-[10px] font-bold mono tracking-wider ${t.textMuted}`}
             >
               INTEGRATIONS
             </span>
@@ -359,20 +351,12 @@ function AgentDetail({
           isActive ? (
             <div className="flex items-center gap-3 py-4">
               <BrailleIndicator />
-              <span
-                className={`text-xs ${
-                  isDark ? "text-slate-600" : "text-slate-400"
-                }`}
-              >
+              <span className={`text-xs ${t.textMuted}`}>
                 Waiting for activity…
               </span>
             </div>
           ) : (
-            <p
-              className={`text-sm ${
-                isDark ? "text-slate-600" : "text-slate-400"
-              }`}
-            >
+            <p className={`text-sm ${t.textMuted}`}>
               No logs recorded
             </p>
           )
@@ -413,14 +397,12 @@ function AgentDetail({
               </span>
               {!responseOpen && (
                 <span
-                  className={`text-xs truncate min-w-0 ${
-                    isDark ? "text-slate-500" : "text-slate-400"
-                  }`}
+                  className={`text-xs truncate min-w-0 ${t.textMuted}`}
                 >
                   {agent.result.slice(0, 160)}
                 </span>
               )}
-              <span className={`ml-auto shrink-0 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+              <span className={`ml-auto shrink-0 ${t.textMuted}`}>
                 {responseOpen ? "▲" : "▼"}
               </span>
             </button>
@@ -481,9 +463,7 @@ function TimelineRow({
     ? "bg-sky-400"
     : isError
       ? "bg-rose-400"
-      : isDark
-        ? "bg-slate-700"
-        : "bg-slate-300";
+      : t.status.cancelled.dot;
 
   return (
     <div className="flex gap-3">
@@ -514,9 +494,7 @@ function TimelineRow({
                 ? "text-sky-400"
                 : isError
                   ? "text-rose-400"
-                  : isToolResult
-                    ? t.textMuted
-                    : t.textMuted
+                  : t.textMuted
             }`}
           >
             {isToolUse ? "TOOL" : isError ? "ERROR" : isToolResult ? "RESPONSE" : "TEXT"}
