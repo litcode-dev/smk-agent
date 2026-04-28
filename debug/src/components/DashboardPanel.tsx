@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useRef, useCallback, type ReactNode } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
+import { darkTheme, lightTheme } from "../lib/theme.js";
 
 type TimeRange = "all" | "7d" | "30d" | "90d";
 
@@ -88,55 +89,33 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
     );
   }
 
-  const c = isDark
-    ? {
-        card: "bg-slate-900/60 border-slate-800",
-        label: "text-slate-500",
-        value: "text-slate-100",
-        sub: "text-slate-400",
-        chart: "bg-slate-900/40 border-slate-800",
-      }
-    : {
-        card: "bg-white border-slate-200",
-        label: "text-slate-500",
-        value: "text-slate-900",
-        sub: "text-slate-600",
-        chart: "bg-white border-slate-200",
-      };
+  const t = isDark ? darkTheme : lightTheme;
+  const c = {
+    card: t.card,
+    label: t.textMuted,
+    value: t.textPrimary,
+    sub: t.textSecondary,
+    chart: t.card,
+  };
 
   const failPct = (filtered.agents.failureRate * 100).toFixed(1);
 
   return (
     <div className="h-full overflow-y-auto debug-scroll -m-5 p-5 space-y-5">
       <div className="flex items-center justify-between">
-        <h2
-          className={`text-sm font-bold uppercase tracking-wider ${
-            isDark ? "text-slate-400" : "text-slate-500"
-          }`}
-        >
+        <h2 className={`text-[13px] font-semibold ${t.textPrimary}`}>
           Overview
         </h2>
         <div
-          className={`flex items-center rounded-lg border text-xs ${
-            isDark
-              ? "border-slate-700 bg-slate-900/50"
-              : "border-slate-200 bg-slate-50"
-          }`}
+          className={`flex items-center gap-0.5 rounded-lg border p-0.5 text-xs ${t.filterGroup}`}
         >
           {RANGES.map((r) => (
             <button
               key={r.id}
+              type="button"
               onClick={() => setRange(r.id)}
-              className={`px-3 py-1.5 transition-colors ${
-                range === r.id
-                  ? isDark
-                    ? "bg-slate-700 text-white font-medium"
-                    : "bg-white text-slate-900 font-medium shadow-sm"
-                  : isDark
-                    ? "text-slate-500 hover:text-slate-300"
-                    : "text-slate-500 hover:text-slate-700"
-              } ${r.id === "7d" ? "rounded-l-lg" : ""} ${
-                r.id === "all" ? "rounded-r-lg" : ""
+              className={`px-3 py-1.5 rounded-md transition-colors ${
+                range === r.id ? t.filterActive : t.filterInactive
               }`}
             >
               {r.label}
@@ -205,18 +184,35 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
         />
       </div>
 
+      {/* Memory summary — relocated from header */}
+      <div className={`flex items-center gap-6 rounded-xl border px-4 py-3 ${t.card}`}>
+        <span className={`text-[11px] font-semibold uppercase tracking-wider ${t.textMuted}`}>Memory</span>
+        {(
+          [
+            ["Short",     data.memories.shortTerm,  isDark ? "text-sky-400"    : "text-sky-600"    ],
+            ["Long",      data.memories.longTerm,    isDark ? "text-violet-400" : "text-violet-600" ],
+            ["Permanent", data.memories.permanent,   isDark ? "text-amber-400"  : "text-amber-600"  ],
+          ] as const
+        ).map(([label, count, color]) => (
+          <div key={label} className="flex items-center gap-1.5 text-xs">
+            <span className={t.textMuted}>{label}</span>
+            <span className={`mono font-semibold ${color}`}>{count}</span>
+          </div>
+        ))}
+      </div>
+
       {filtered.days.length > 1 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className={`rounded-xl border p-4 ${c.chart}`}>
             <h3
-              className={`text-xs font-semibold uppercase tracking-wider mb-3 ${c.label}`}
+              className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
             >
               Cost Over Time
             </h3>
             <StackedAreaChart
               data={filtered.days}
               keys={["agentCost"]}
-              colors={isDark ? ["#38bdf8"] : ["#0284c7"]}
+              colors={[t.chartCost]}
               labels={["Agents"]}
               format={(v) => `$${v.toFixed(2)}`}
               isDark={isDark}
@@ -224,14 +220,14 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
           </div>
           <div className={`rounded-xl border p-4 ${c.chart}`}>
             <h3
-              className={`text-xs font-semibold uppercase tracking-wider mb-3 ${c.label}`}
+              className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
             >
               Token Usage Over Time
             </h3>
             <StackedAreaChart
               data={filtered.days}
               keys={["inputTokens", "outputTokens"]}
-              colors={isDark ? ["#38bdf8", "#34d399"] : ["#0284c7", "#059669"]}
+              colors={[t.chartInput, t.chartOutput]}
               labels={["Input", "Output"]}
               format={fmtTokens}
               isDark={isDark}
