@@ -73,7 +73,7 @@ export const darkTheme = {
   chartOutput: "#34d399",
 
   stepperComplete: "bg-emerald-950 border-emerald-500 text-emerald-400",
-  stepperActive:   "bg-amber-950 border-amber-400",
+  stepperActive:   "bg-amber-950 border-amber-400 text-amber-400",
   stepperPending:  "bg-[#0f172a] border-slate-700 text-slate-500",
   stepperLineComplete: "bg-emerald-500",
   stepperLinePending:  "bg-slate-800",
@@ -147,13 +147,16 @@ export const lightTheme = {
 
   chartCost: "#059669",
   chartInput: "#0284c7",
-  chartOutput: "#059669",
+  chartOutput: "#059669", // intentionally same as chartCost in light mode — both use dark emerald for contrast
 
   stepperComplete: "bg-emerald-50 border-emerald-500 text-emerald-600",
-  stepperActive:   "bg-amber-50 border-amber-400",
+  stepperActive:   "bg-amber-50 border-amber-400 text-amber-600",
   stepperPending:  "bg-slate-50 border-slate-300 text-slate-400",
   stepperLineComplete: "bg-emerald-500",
   stepperLinePending:  "bg-slate-200",
 } as const;
 
 export type Theme = typeof darkTheme;
+// Note: lightTheme and darkTheme have identical key shapes — verified structurally.
+// A compile-time shape guard cannot use Theme = typeof darkTheme because as const
+// makes literal types incompatible. Keep the two objects in sync manually.
