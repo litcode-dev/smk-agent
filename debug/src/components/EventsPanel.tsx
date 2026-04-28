@@ -1,62 +1,77 @@
+// debug/src/components/EventsPanel.tsx
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
-
-const EVENT_COLOR: Record<string, string> = {
-  "memory.written": "bg-emerald-500/20 text-emerald-400",
-  "memory.recalled": "bg-sky-500/20 text-sky-400",
-  "memory.extracted": "bg-violet-500/20 text-violet-400",
-  "memory.consolidated": "bg-amber-500/20 text-amber-400",
-  "memory.cleaned": "bg-slate-500/20 text-slate-400",
-};
+import { darkTheme, lightTheme } from "../lib/theme.js";
+import { PanelHeader, EmptyState } from "./ui/index.js";
 
 export function EventsPanel({ isDark }: { isDark: boolean }) {
   const events = useQuery(api.memoryEvents.recent, { limit: 200 });
+  const t = isDark ? darkTheme : lightTheme;
 
-  const card = isDark
-    ? "bg-slate-900/40 border-slate-800"
-    : "bg-white border-slate-200";
-  const row = isDark
-    ? "bg-slate-900/50 border-slate-800"
-    : "bg-slate-50 border-slate-200";
-  const muted = isDark ? "text-slate-500" : "text-slate-400";
+  const row = isDark ? "bg-[#0f172a] border-slate-800" : "bg-white border-slate-200";
+  const rowFirst = isDark ? "bg-emerald-950/20 border-emerald-900/50" : "bg-emerald-50 border-emerald-200";
 
   return (
-    <div className={`rounded-lg border p-4 ${card}`}>
-      <h2 className={`text-xs uppercase tracking-wider mb-3 ${muted}`}>
-        Recent events
-      </h2>
+    <div className={`rounded-xl border p-4 ${t.card}`}>
+      <div className="mb-3">
+        <PanelHeader
+          isDark={isDark}
+          title="Events"
+          right={
+            <span className="flex items-center gap-1.5">
+              <span className="relative flex h-[5px] w-[5px]">
+                <span className={`absolute inline-flex h-full w-full rounded-full ${t.liveDot} pulse-ring`} />
+                <span className={`relative inline-flex rounded-full h-[5px] w-[5px] ${t.liveDot}`} />
+              </span>
+              <span className={`text-[10px] font-medium ${t.textAccent}`}>live</span>
+            </span>
+          }
+        />
+      </div>
+
       {!events ? (
-        <div className={`py-6 text-center text-sm ${muted}`}>Loading…</div>
+        <EmptyState isDark={isDark} message="Loading…" />
       ) : events.length === 0 ? (
-        <div className={`py-6 text-center text-sm ${muted}`}>
-          No events yet. Chat with the agent to see memory events stream in.
-        </div>
+        <EmptyState
+          isDark={isDark}
+          message="No events yet. Chat with the agent to see memory events stream in."
+        />
       ) : (
         <div className="space-y-1.5">
-          {events.map((e) => (
-            <div key={e._id} className={`border rounded-lg p-2.5 ${row}`}>
-              <div className="flex items-center gap-2 text-[10px] mono">
-                <span
-                  className={`px-1.5 py-0.5 rounded ${EVENT_COLOR[e.eventType] ?? "bg-slate-800/50 text-slate-400"}`}
-                >
-                  {e.eventType}
-                </span>
-                {e.conversationId && <span className={muted}>{e.conversationId}</span>}
-                {e.memoryId && <span className={muted}>mem:{e.memoryId.slice(-6)}</span>}
-                {e.agentId && <span className={muted}>agent:{e.agentId.slice(-6)}</span>}
-                <span className={`${muted} ml-auto`}>
-                  {new Date(e.createdAt).toLocaleTimeString()}
-                </span>
-              </div>
-              {e.data && (
-                <div
-                  className={`text-[11px] mono mt-1 break-all ${isDark ? "text-slate-400" : "text-slate-600"}`}
-                >
-                  {e.data}
+          {events.map((e, idx) => {
+            const pillCls =
+              t.event[e.eventType as keyof typeof t.event] ??
+              (isDark ? "bg-slate-800 text-slate-400 border border-slate-700/40" : "bg-slate-100 text-slate-600 border border-slate-200");
+            return (
+              <div
+                key={e._id}
+                className={`border rounded-lg p-2.5 ${idx === 0 ? rowFirst : row}`}
+              >
+                <div className="flex items-center gap-2 text-[10px] mono flex-wrap">
+                  <span className={`px-2 py-0.5 rounded-full font-bold uppercase tracking-[0.03em] text-[8px] ${pillCls}`}>
+                    {e.eventType}
+                  </span>
+                  {e.conversationId && (
+                    <span className={t.textMuted}>{e.conversationId}</span>
+                  )}
+                  {e.memoryId && (
+                    <span className={t.textMuted}>mem:{e.memoryId.slice(-6)}</span>
+                  )}
+                  {e.agentId && (
+                    <span className={t.textMuted}>agent:{e.agentId.slice(-6)}</span>
+                  )}
+                  <span className={`${t.textMuted} ml-auto`}>
+                    {new Date(e.createdAt).toLocaleTimeString()}
+                  </span>
                 </div>
-              )}
-            </div>
-          ))}
+                {e.data && (
+                  <div className={`text-[11px] mono mt-1 break-all ${t.textSecondary}`}>
+                    {e.data}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
