@@ -12,12 +12,12 @@ interface LogEntry {
   content: string;
 }
 
-const STATUS_CONFIG: Record<string, { dot: string; label: string; color: string }> = {
-  spawned: { dot: "bg-amber-400", label: "Spawning", color: "text-amber-400" },
-  running: { dot: "bg-sky-400", label: "Running", color: "text-sky-400" },
-  completed: { dot: "bg-emerald-400", label: "Done", color: "text-emerald-400" },
-  failed: { dot: "bg-rose-400", label: "Failed", color: "text-rose-400" },
-  cancelled: { dot: "bg-slate-500", label: "Cancelled", color: "text-slate-500" },
+const STATUS_CONFIG: Record<string, { label: string }> = {
+  spawned: { label: "Spawning" },
+  running: { label: "Running" },
+  completed: { label: "Done" },
+  failed: { label: "Failed" },
+  cancelled: { label: "Cancelled" },
 };
 
 function formatLogRow(log: LogEntry): string {
@@ -40,9 +40,6 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
   const activeCount = agentList.filter(
     (a) => a.status === "running" || a.status === "spawned",
   ).length;
-
-  const cardBg = isDark ? "bg-slate-900/40" : "bg-white";
-  const hoverBg = isDark ? "hover:bg-slate-800/40" : "hover:bg-slate-50";
 
   if (selected) {
     return (
@@ -96,7 +93,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
         {agents === undefined ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className={`h-20 rounded-xl border ${cardBg} shimmer`} />
+              <div key={i} className={`h-20 rounded-xl border ${t.card} shimmer`} />
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -120,17 +117,17 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
               <div
                 key={agent._id}
                 onClick={() => setSelected(agent.agentId)}
-                className={`relative border-l-2 rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${cardBg} ${hoverBg} ${t.status[agent.status as keyof typeof t.status]?.border ?? "border-l-transparent"} ${t.status[agent.status as keyof typeof t.status]?.tint ?? ""}`}
+                className={`relative border-l-2 rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${t.card} ${t.cardHover} ${t.status[agent.status as keyof typeof t.status]?.border ?? "border-l-transparent"} ${t.status[agent.status as keyof typeof t.status]?.tint ?? ""}`}
               >
                 <div className="flex items-center gap-2.5 mb-1.5">
                   <span className="relative flex h-2.5 w-2.5 shrink-0">
                     {isActive && (
                       <span
-                        className={`absolute inline-flex h-full w-full rounded-full ${cfg.dot} pulse-ring`}
+                        className={`absolute inline-flex h-full w-full rounded-full ${t.status[agent.status as keyof typeof t.status]?.dot ?? t.status.cancelled.dot} pulse-ring`}
                       />
                     )}
                     <span
-                      className={`relative inline-flex rounded-full h-2.5 w-2.5 ${cfg.dot}`}
+                      className={`relative inline-flex rounded-full h-2.5 w-2.5 ${t.status[agent.status as keyof typeof t.status]?.dot ?? t.status.cancelled.dot}`}
                     />
                   </span>
                   <span
@@ -141,7 +138,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
                     {agent.name}
                   </span>
                   <span
-                    className={`flex items-center gap-2 text-xs ml-auto ${cfg.color}`}
+                    className={`flex items-center gap-2 text-xs ml-auto ${t.status[agent.status as keyof typeof t.status]?.text ?? t.status.cancelled.text}`}
                   >
                     {isActive && <BrailleIndicator />}
                     {cfg.label}
@@ -149,9 +146,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
                 </div>
 
                 <p
-                  className={`text-xs truncate mb-2 ${
-                    isDark ? "text-slate-500" : "text-slate-500"
-                  }`}
+                  className={`text-xs truncate mb-2 ${t.textMuted}`}
                 >
                   {agent.status === "completed"
                     ? agent.result?.slice(0, 120)
@@ -207,6 +202,7 @@ function AgentDetail({
   onBack: () => void;
   isDark: boolean;
 }) {
+  const t = isDark ? darkTheme : lightTheme;
   const agent = useQuery(api.agents.get, { agentId });
   const logs = useQuery(api.agents.getLogs, { agentId, limit: 500 });
   const [requestOpen, setRequestOpen] = useState(false);
@@ -231,9 +227,7 @@ function AgentDetail({
   return (
     <div className="flex flex-col h-full -m-5 fade-in">
       <div
-        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${
-          isDark ? "border-slate-800" : "border-slate-200"
-        }`}
+        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${t.border}`}
       >
         <button
           onClick={onBack}
@@ -248,11 +242,11 @@ function AgentDetail({
         <span className="relative flex h-2.5 w-2.5">
           {isActive && (
             <span
-              className={`absolute inline-flex h-full w-full rounded-full ${cfg.dot} pulse-ring`}
+              className={`absolute inline-flex h-full w-full rounded-full ${t.status[agent.status as keyof typeof t.status]?.dot ?? t.status.cancelled.dot} pulse-ring`}
             />
           )}
           <span
-            className={`relative inline-flex rounded-full h-2.5 w-2.5 ${cfg.dot}`}
+            className={`relative inline-flex rounded-full h-2.5 w-2.5 ${t.status[agent.status as keyof typeof t.status]?.dot ?? t.status.cancelled.dot}`}
           />
         </span>
         <span
@@ -262,7 +256,7 @@ function AgentDetail({
         >
           {agent.name}
         </span>
-        <span className={`text-xs ${cfg.color}`}>{cfg.label}</span>
+        <span className={`text-xs ${t.status[agent.status as keyof typeof t.status]?.text ?? t.status.cancelled.text}`}>{cfg.label}</span>
         <div className="ml-auto flex items-center gap-3 text-xs mono">
           {agent.costUsd > 0 && (
             <span className="text-emerald-500 font-semibold">
