@@ -99,7 +99,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
         ) : filtered.length === 0 ? (
           <p
             className={`text-sm py-8 text-center ${
-              isDark ? "text-slate-600" : "text-slate-400"
+              t.textMuted
             }`}
           >
             {statusFilter !== "all" ? `No ${statusFilter} agents` : "No agents yet"}
@@ -131,9 +131,7 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
                     />
                   </span>
                   <span
-                    className={`text-sm font-medium truncate ${
-                      isDark ? "text-slate-200" : "text-slate-800"
-                    }`}
+                    className={`text-sm font-medium truncate ${t.textPrimary}`}
                   >
                     {agent.name}
                   </span>
@@ -163,13 +161,11 @@ export function AgentsPanel({ isDark }: { isDark: boolean }) {
                       </span>
                     )}
                     {totalTokens > 0 && (
-                      <span
-                        className={isDark ? "text-slate-600" : "text-slate-400"}
-                      >
+                      <span className={t.textMuted}>
                         {(totalTokens / 1000).toFixed(1)}k tok
                       </span>
                     )}
-                    <span className={isDark ? "text-slate-600" : "text-slate-400"}>
+                    <span className={t.textMuted}>
                       {elapsed.toFixed(1)}s
                     </span>
                   </div>
@@ -249,11 +245,7 @@ function AgentDetail({
             className={`relative inline-flex rounded-full h-2.5 w-2.5 ${t.status[agent.status as keyof typeof t.status]?.dot ?? t.status.cancelled.dot}`}
           />
         </span>
-        <span
-          className={`text-sm font-medium ${
-            isDark ? "text-slate-200" : "text-slate-800"
-          }`}
-        >
+        <span className={`text-sm font-medium ${t.textPrimary}`}>
           {agent.name}
         </span>
         <span className={`text-xs ${t.status[agent.status as keyof typeof t.status]?.text ?? t.status.cancelled.text}`}>{cfg.label}</span>
@@ -264,7 +256,7 @@ function AgentDetail({
             </span>
           )}
           {totalTokens > 0 && (
-            <span className={isDark ? "text-slate-500" : "text-slate-400"}>
+            <span className={t.textMuted}>
               {(totalTokens / 1000).toFixed(1)}k tok
             </span>
           )}
@@ -480,6 +472,7 @@ function TimelineRow({
   isLast: boolean;
   isDark: boolean;
 }) {
+  const t = isDark ? darkTheme : lightTheme;
   const isToolUse = log.logType === "tool_use";
   const isToolResult = log.logType === "tool_result";
   const isError = log.logType === "error";
@@ -522,12 +515,8 @@ function TimelineRow({
                 : isError
                   ? "text-rose-400"
                   : isToolResult
-                    ? isDark
-                      ? "text-slate-500"
-                      : "text-slate-400"
-                    : isDark
-                      ? "text-slate-600"
-                      : "text-slate-400"
+                    ? t.textMuted
+                    : t.textMuted
             }`}
           >
             {isToolUse ? "TOOL" : isError ? "ERROR" : isToolResult ? "RESPONSE" : "TEXT"}
@@ -562,9 +551,7 @@ function TimelineRow({
                 ? isDark
                   ? "text-sky-400/60"
                   : "text-sky-600/60"
-                : isDark
-                  ? "text-slate-400"
-                  : "text-slate-600"
+                : t.textSecondary
           }`}
         >
           {log.content.slice(0, 600)}
