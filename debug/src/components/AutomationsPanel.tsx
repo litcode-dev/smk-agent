@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
+import { darkTheme, lightTheme } from "../lib/theme.js";
+import { PanelHeader } from "./ui/index.js";
 
 function formatSchedule(schedule: string): string {
   return schedule;
@@ -22,15 +24,12 @@ const STATUS_COLOR: Record<string, { dot: string; text: string }> = {
 };
 
 export function AutomationsPanel({ isDark }: { isDark: boolean }) {
+  const t = isDark ? darkTheme : lightTheme;
   const automations = useQuery(api.automations.list, {});
   const setEnabled = useMutation(api.automations.setEnabled);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const cardBg = isDark
-    ? "bg-slate-900/40 border-slate-800/60"
-    : "bg-white border-slate-200";
-  const hoverBg = isDark ? "hover:bg-slate-800/40" : "hover:bg-slate-50";
-  const mutedText = isDark ? "text-slate-500" : "text-slate-400";
+  const mutedText = t.textMuted;
 
   const list = automations ?? [];
   const enabledCount = list.filter((a: any) => a.enabled).length;
@@ -47,35 +46,30 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
 
   return (
     <div className="flex flex-col h-full -m-5">
-      <div
-        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${
-          isDark ? "border-slate-800" : "border-slate-200"
-        }`}
-      >
-        <h2
-          className={`text-xs font-semibold uppercase tracking-wider ${
-            isDark ? "text-slate-500" : "text-slate-400"
-          }`}
-        >
-          Automations
-        </h2>
-        <span className={`text-xs mono ${mutedText}`}>
-          {enabledCount} enabled / {list.length} total
-        </span>
+      <div className={`shrink-0 border-b px-5 py-3 ${t.borderSubtle}`}>
+        <PanelHeader
+          isDark={isDark}
+          title="Automations"
+          right={
+            enabledCount > 0 ? (
+              <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${t.accentBadge}`}>
+                {enabledCount} enabled
+              </span>
+            ) : undefined
+          }
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto debug-scroll p-4 space-y-3">
         {automations === undefined ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className={`h-20 rounded-xl border ${cardBg} shimmer`} />
+              <div key={i} className={`h-20 rounded-xl border ${t.card} shimmer`} />
             ))}
           </div>
         ) : list.length === 0 ? (
           <p
-            className={`text-sm py-8 text-center ${
-              isDark ? "text-slate-600" : "text-slate-400"
-            }`}
+            className={`text-sm py-8 text-center ${t.textMuted}`}
           >
             No automations yet. Text the agent: <em>"every morning at 8, summarize my calendar"</em>.
           </p>
@@ -83,7 +77,11 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
           list.map((auto: any) => (
             <div
               key={auto._id}
-              className={`border rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${cardBg} ${hoverBg}`}
+              className={`relative border-l-2 rounded-xl p-4 cursor-pointer transition-all duration-150 fade-in ${
+                auto.enabled
+                  ? `${t.status.completed.border} ${t.status.completed.tint}`
+                  : `border-l-transparent ${isDark ? "bg-slate-900/40" : "bg-white"} ${isDark ? "border-slate-800" : "border-slate-200"}`
+              } ${isDark ? "hover:bg-slate-800/40" : "hover:bg-slate-50"}`}
               onClick={() => setSelectedId(auto.automationId)}
             >
               <div className="flex items-center gap-2.5 mb-1.5">
@@ -111,21 +109,9 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
                 </button>
 
                 <span
-                  className={`text-sm font-medium truncate ${
-                    isDark ? "text-slate-200" : "text-slate-800"
-                  } ${!auto.enabled ? "opacity-50" : ""}`}
+                  className={`text-sm font-medium truncate ${t.textPrimary} ${!auto.enabled ? "opacity-50" : ""}`}
                 >
                   {auto.name}
-                </span>
-
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-                    isDark
-                      ? "text-sky-400 bg-sky-400/10 border-sky-500/20"
-                      : "text-sky-600 bg-sky-50 border-sky-200"
-                  }`}
-                >
-                  Scheduled
                 </span>
 
                 <span className={`text-xs ml-auto mono ${mutedText}`}>
@@ -142,9 +128,7 @@ export function AutomationsPanel({ isDark }: { isDark: boolean }) {
               </p>
 
               <div
-                className={`flex items-center gap-3 ml-[46px] text-[10px] mono ${
-                  isDark ? "text-slate-600" : "text-slate-400"
-                }`}
+                className={`flex items-center gap-3 ml-[46px] text-[10px] mono ${t.textMuted}`}
               >
                 {auto.lastRunAt && <span>Last run: {timeAgo(auto.lastRunAt)}</span>}
                 {auto.nextRunAt && auto.enabled && (
@@ -182,7 +166,7 @@ function AutomationDetail({
   const setEnabled = useMutation(api.automations.setEnabled);
   const remove = useMutation(api.automations.remove);
 
-  const mutedText = isDark ? "text-slate-500" : "text-slate-400";
+  const t = isDark ? darkTheme : lightTheme;
 
   if (!auto) {
     return (
@@ -199,9 +183,7 @@ function AutomationDetail({
   return (
     <div className="flex flex-col h-full -m-5 fade-in">
       <div
-        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${
-          isDark ? "border-slate-800" : "border-slate-200"
-        }`}
+        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${t.border}`}
       >
         <button
           onClick={onBack}
@@ -233,25 +215,11 @@ function AutomationDetail({
           />
         </button>
 
-        <span
-          className={`text-sm font-medium ${
-            isDark ? "text-slate-200" : "text-slate-800"
-          }`}
-        >
+        <span className={`text-sm font-medium ${t.textPrimary}`}>
           {auto.name}
         </span>
 
-        <span
-          className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-            isDark
-              ? "text-sky-400 bg-sky-400/10 border-sky-500/20"
-              : "text-sky-600 bg-sky-50 border-sky-200"
-          }`}
-        >
-          Scheduled
-        </span>
-
-        <span className={`text-xs ml-auto mono ${mutedText}`}>
+        <span className={`text-xs ml-auto mono ${t.textMuted}`}>
           {formatSchedule(auto.schedule)}
         </span>
 
@@ -269,52 +237,32 @@ function AutomationDetail({
       </div>
 
       <div
-        className={`shrink-0 border-b px-5 py-3 space-y-2 ${
-          isDark ? "border-slate-800/50" : "border-slate-100"
-        }`}
+        className={`shrink-0 border-b px-5 py-3 space-y-2 ${t.borderSubtle}`}
       >
         <div>
-          <span
-            className={`text-[10px] font-bold mono ${
-              isDark ? "text-slate-600" : "text-slate-400"
-            }`}
-          >
+          <span className={`text-[10px] font-bold mono ${t.textMuted}`}>
             TASK{" "}
           </span>
-          <span
-            className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}
-          >
+          <span className={`text-xs ${t.textSecondary}`}>
             {auto.task}
           </span>
         </div>
         {auto.integrations.length > 0 && (
           <div>
-            <span
-              className={`text-[10px] font-bold mono ${
-                isDark ? "text-slate-600" : "text-slate-400"
-              }`}
-            >
+            <span className={`text-[10px] font-bold mono ${t.textMuted}`}>
               INTEGRATIONS{" "}
             </span>
-            <span
-              className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}
-            >
+            <span className={`text-xs ${t.textSecondary}`}>
               {auto.integrations.join(", ")}
             </span>
           </div>
         )}
         {auto.nextRunAt && auto.enabled && (
           <div>
-            <span
-              className={`text-[10px] font-bold mono ${
-                isDark ? "text-slate-600" : "text-slate-400"
-              }`}
-            >
+            <span className={`text-[10px] font-bold mono ${t.textMuted}`}>
               NEXT RUN{" "}
             </span>
-            <span
-              className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}
-            >
+            <span className={`text-xs ${t.textSecondary}`}>
               {new Date(auto.nextRunAt).toLocaleString()}
             </span>
           </div>
@@ -322,15 +270,9 @@ function AutomationDetail({
       </div>
 
       <div className="flex-1 overflow-y-auto debug-scroll">
-        <div
-          className={`px-5 py-2 border-b ${
-            isDark ? "border-slate-800/50" : "border-slate-100"
-          }`}
-        >
+        <div className={`px-5 py-2 border-b ${t.borderSubtle}`}>
           <span
-            className={`text-[10px] font-semibold uppercase tracking-wider ${
-              isDark ? "text-slate-600" : "text-slate-400"
-            }`}
+            className={`text-[10px] font-semibold uppercase tracking-wider ${t.textMuted}`}
           >
             Run History ({runs?.length ?? 0})
           </span>
@@ -348,27 +290,17 @@ function AutomationDetail({
             ))}
           </div>
         ) : runs.length === 0 ? (
-          <p
-            className={`text-sm text-center py-8 ${
-              isDark ? "text-slate-600" : "text-slate-400"
-            }`}
-          >
+          <p className={`text-sm text-center py-8 ${t.textMuted}`}>
             No runs yet
           </p>
         ) : (
-          <div
-            className={`divide-y ${
-              isDark ? "divide-slate-800/40" : "divide-slate-100"
-            }`}
-          >
+          <div className={`divide-y ${t.divider}`}>
             {runs.map((run: any) => {
               const color = STATUS_COLOR[run.status] ?? STATUS_COLOR.running;
               return (
                 <div
                   key={run._id}
-                  className={`px-5 py-2.5 ${
-                    isDark ? "hover:bg-slate-900/40" : "hover:bg-slate-50"
-                  }`}
+                  className={`px-5 py-2.5 ${isDark ? "hover:bg-slate-900/40" : "hover:bg-slate-50"}`}
                 >
                   <div className="flex items-center gap-3">
                     <span
@@ -379,22 +311,14 @@ function AutomationDetail({
                     >
                       {run.status}
                     </span>
-                    <span
-                      className={`text-xs flex-1 truncate ${
-                        isDark ? "text-slate-400" : "text-slate-600"
-                      }`}
-                    >
+                    <span className={`text-xs flex-1 truncate ${t.textSecondary}`}>
                       {run.result
                         ? run.result.slice(0, 120)
                         : run.error
                           ? run.error.slice(0, 120)
                           : "—"}
                     </span>
-                    <span
-                      className={`text-[10px] mono shrink-0 ${
-                        isDark ? "text-slate-600" : "text-slate-400"
-                      }`}
-                    >
+                    <span className={`text-[10px] mono shrink-0 ${t.textMuted}`}>
                       {run.startedAt ? timeAgo(run.startedAt) : ""}
                     </span>
                   </div>
