@@ -9,13 +9,14 @@ import { handleUserMessage } from "./interaction-agent.js";
 import { loadIntegrations } from "./integrations/registry.js";
 import { startCleanupLoop } from "./memory/clean.js";
 import { startAutomationLoop } from "./automations.js";
-import { startHeartbeatLoop } from "./heartbeat.js";
+import { startHeartbeatLoop, markOrphanedAgents } from "./heartbeat.js";
 import { startConsolidationLoop } from "./consolidation.js";
 import { cancelAgent, retryAgent } from "./execution-agent.js";
 import { createComposioRouter } from "./composio-routes.js";
 
 async function main() {
   await loadIntegrations();
+  await markOrphanedAgents();
   startCleanupLoop();
   startAutomationLoop();
   startHeartbeatLoop();

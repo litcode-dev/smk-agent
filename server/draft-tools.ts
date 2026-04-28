@@ -84,21 +84,20 @@ export function createDraftDecisionMcp(conversationId: string) {
         "Approve and execute a draft. Spawns an execution agent to actually perform the action based on the stored payload.",
         { draftId: z.string(), integrations: z.array(z.string()) },
         async (args) => {
-          const draft = await convex.query(api.drafts.get, { draftId: args.draftId });
-          if (!draft || draft.status !== "pending") {
+          // Atomically claim the draft so double-taps can't trigger duplicate sends.
+          const draft = await convex.mutation(api.drafts.claimForExecution, {
+            draftId: args.draftId,
+          });
+          if (!draft) {
             return {
               content: [
                 {
                   type: "text" as const,
-                  text: `Draft ${args.draftId} not found or already decided.`,
+                  text: `Draft ${args.draftId} not found, already in progress, or already decided.`,
                 },
               ],
             };
           }
-          await convex.mutation(api.drafts.setStatus, {
-            draftId: args.draftId,
-            status: "sent",
-          });
           const task = `Execute this approved draft. Use the matching integration tool to actually send/create it.
 kind: ${draft.kind}
 summary: ${draft.summary}
@@ -109,14 +108,34 @@ payload JSON: ${draft.payload}`;
             conversationId,
             name: `send:${draft.kind}`,
           });
-          return {
-            content: [
-              {
-                type: "text" as const,
-                text: `Draft ${args.draftId} executed.\n\n${res.result}`,
-              },
-            ],
-          };
+          if (res.status === "completed") {
+            await convex.mutation(api.drafts.setStatus, {
+              draftId: args.draftId,
+              status: "sent",
+            });
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: `Draft ${args.draftId} executed.\n\n${res.result}`,
+                },
+              ],
+            };
+          } else {
+            // Revert to pending so the user can retry.
+            await convex.mutation(api.drafts.setStatus, {
+              draftId: args.draftId,
+              status: "pending",
+            });
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: `Draft ${args.draftId} execution failed (${res.status}). It has been reset to pending so you can try again.\n\n${res.result}`,
+                },
+              ],
+            };
+          }
         },
       ),
 
