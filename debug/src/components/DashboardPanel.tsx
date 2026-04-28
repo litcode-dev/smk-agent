@@ -239,7 +239,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className={`rounded-xl border p-4 ${c.chart}`}>
           <h3
-            className={`text-xs font-semibold uppercase tracking-wider mb-3 ${c.label}`}
+            className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
           >
             Agent Status
           </h3>
@@ -273,7 +273,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
 
         <div className={`rounded-xl border p-4 ${c.chart}`}>
           <h3
-            className={`text-xs font-semibold uppercase tracking-wider mb-3 ${c.label}`}
+            className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
           >
             Token Breakdown
           </h3>
