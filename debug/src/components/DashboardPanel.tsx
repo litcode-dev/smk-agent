@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useRef, useCallback, type ReactNode } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
-import { darkTheme, lightTheme } from "../lib/theme.js";
+import { darkTheme, lightTheme, type Theme } from "../lib/theme.js";
 
 type TimeRange = "all" | "7d" | "30d" | "90d";
 
@@ -33,6 +33,8 @@ function fmtTokens(n: number): string {
 export function DashboardPanel({ isDark }: { isDark: boolean }) {
   const data = useQuery(api.dashboard.metrics, {});
   const [range, setRange] = useState<TimeRange>("all");
+
+  const t = isDark ? darkTheme : lightTheme;
 
   const filtered = useMemo(() => {
     if (!data) return null;
@@ -79,24 +81,11 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
 
   if (!data || !filtered) {
     return (
-      <div
-        className={`flex items-center justify-center h-full ${
-          isDark ? "text-slate-500" : "text-slate-400"
-        }`}
-      >
+      <div className={`flex items-center justify-center h-full ${t.textMuted}`}>
         Loading dashboard…
       </div>
     );
   }
-
-  const t = isDark ? darkTheme : lightTheme;
-  const c = {
-    card: t.card,
-    label: t.textMuted,
-    value: t.textPrimary,
-    sub: t.textSecondary,
-    chart: t.card,
-  };
 
   const failPct = (filtered.agents.failureRate * 100).toFixed(1);
 
@@ -125,24 +114,23 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <StatCard label="Messages" value={fmt(data.messages)} c={c} />
+        <StatCard label="Messages" value={fmt(data.messages)} isDark={isDark} />
         <StatCard
           label="Memories"
           value={fmt(data.memories.total)}
           sub={`${fmt(data.memories.shortTerm)}s / ${fmt(data.memories.longTerm)}l / ${fmt(data.memories.permanent)}p`}
-          c={c}
+          isDark={isDark}
         />
         <StatCard
           label="Agents Spawned"
           value={fmt(filtered.agents.total)}
           sub={`${data.agents.running} running`}
-          c={c}
+          isDark={isDark}
         />
         <StatCard
           label="Total Cost"
           value={`$${filtered.cost.total.toFixed(2)}`}
           color={isDark ? "text-emerald-400" : "text-emerald-600"}
-          c={c}
           isDark={isDark}
           info={{
             title: "API-equivalent cost",
@@ -167,7 +155,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
           label="Tokens"
           value={fmtTokens(filtered.tokens.total)}
           sub={`${fmtTokens(filtered.tokens.input)} in / ${fmtTokens(filtered.tokens.output)} out`}
-          c={c}
+          isDark={isDark}
         />
         <StatCard
           label="Failure Rate"
@@ -180,7 +168,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
                 : "text-rose-600"
               : undefined
           }
-          c={c}
+          isDark={isDark}
         />
       </div>
 
@@ -203,7 +191,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
 
       {filtered.days.length > 1 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className={`rounded-xl border p-4 ${c.chart}`}>
+          <div className={`rounded-xl border p-4 ${t.card}`}>
             <h3
               className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
             >
@@ -218,7 +206,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
               isDark={isDark}
             />
           </div>
-          <div className={`rounded-xl border p-4 ${c.chart}`}>
+          <div className={`rounded-xl border p-4 ${t.card}`}>
             <h3
               className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
             >
@@ -237,7 +225,7 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div className={`rounded-xl border p-4 ${c.chart}`}>
+        <div className={`rounded-xl border p-4 ${t.card}`}>
           <h3
             className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
           >
@@ -264,14 +252,14 @@ export function DashboardPanel({ isDark }: { isDark: boolean }) {
               ) : null,
             )}
             {filtered.agents.total === 0 && (
-              <p className={`text-xs ${isDark ? "text-slate-600" : "text-slate-400"}`}>
+              <p className={`text-xs ${t.textMuted}`}>
                 No agents run yet in this range.
               </p>
             )}
           </div>
         </div>
 
-        <div className={`rounded-xl border p-4 ${c.chart}`}>
+        <div className={`rounded-xl border p-4 ${t.card}`}>
           <h3
             className={`text-[12px] font-semibold mb-3 ${t.textSecondary}`}
           >
@@ -307,7 +295,6 @@ function StatCard({
   sub,
   color,
   info,
-  c,
   isDark,
 }: {
   label: string;
@@ -315,9 +302,9 @@ function StatCard({
   sub?: string;
   color?: string;
   info?: { title: string; body: ReactNode };
-  c: { card: string; label: string; value: string; sub: string };
-  isDark?: boolean;
+  isDark: boolean;
 }) {
+  const t = isDark ? darkTheme : lightTheme;
   const [open, setOpen] = useState(false);
   const popRef = useRef<HTMLDivElement | null>(null);
 
@@ -340,8 +327,8 @@ function StatCard({
   }, [open]);
 
   return (
-    <div className={`rounded-xl border p-3.5 ${c.card} relative`}>
-      <div className={`text-[11px] font-medium uppercase tracking-wider ${c.label} flex items-center gap-1.5`}>
+    <div className={`rounded-xl border p-3.5 ${t.card} relative`}>
+      <div className={`text-[11px] font-medium uppercase tracking-wider ${t.textMuted} flex items-center gap-1.5`}>
         <span>{label}</span>
         {info && (
           <div className="relative" ref={popRef}>
@@ -362,25 +349,21 @@ function StatCard({
               <div
                 role="dialog"
                 aria-label={info.title}
-                className={`absolute z-30 left-0 top-full mt-1.5 w-64 rounded-lg border px-3 py-2.5 shadow-lg text-[11px] leading-snug normal-case tracking-normal ${
-                  isDark
-                    ? "bg-slate-900 border-slate-700 text-slate-200"
-                    : "bg-white border-slate-200 text-slate-700"
-                }`}
+                className={`absolute z-30 left-0 top-full mt-1.5 w-64 rounded-lg border px-3 py-2.5 shadow-lg text-[11px] leading-snug normal-case tracking-normal ${t.card}`}
               >
-                <div className={`font-semibold mb-1 ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                <div className={`font-semibold mb-1 ${t.textPrimary}`}>
                   {info.title}
                 </div>
-                <div className="font-normal">{info.body}</div>
+                <div className={`font-normal ${t.textSecondary}`}>{info.body}</div>
               </div>
             )}
           </div>
         )}
       </div>
-      <div className={`text-xl font-bold mono mt-1 ${color ?? c.value}`}>
+      <div className={`text-xl font-bold mono mt-1 ${color ?? t.textPrimary}`}>
         {value}
       </div>
-      {sub && <div className={`text-[11px] mt-0.5 ${c.sub}`}>{sub}</div>}
+      {sub && <div className={`text-[11px] mt-0.5 ${t.textSecondary}`}>{sub}</div>}
     </div>
   );
 }
@@ -400,32 +383,22 @@ function BarRow({
   isDark: boolean;
   format?: (v: number) => string;
 }) {
+  const t = isDark ? darkTheme : lightTheme;
+  const trackColor = isDark ? "bg-slate-800" : "bg-slate-100";
   const pct = total > 0 ? (value / total) * 100 : 0;
   const display = format ? format(value) : `$${value.toFixed(2)}`;
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span
-        className={`w-24 truncate capitalize ${
-          isDark ? "text-slate-400" : "text-slate-600"
-        }`}
-      >
+      <span className={`w-24 truncate capitalize ${t.textMuted}`}>
         {label}
       </span>
-      <div
-        className={`flex-1 h-2 rounded-full overflow-hidden ${
-          isDark ? "bg-slate-800" : "bg-slate-100"
-        }`}
-      >
+      <div className={`flex-1 h-2 rounded-full overflow-hidden ${trackColor}`}>
         <div
           className={`h-full rounded-full transition-all ${color}`}
           style={{ width: `${Math.max(pct, 1)}%` }}
         />
       </div>
-      <span
-        className={`w-16 text-right mono font-medium ${
-          isDark ? "text-slate-300" : "text-slate-700"
-        }`}
-      >
+      <span className={`w-16 text-right mono font-medium ${t.textSecondary}`}>
         {display}
       </span>
     </div>
@@ -447,6 +420,7 @@ function StackedAreaChart({
   format: (v: number) => string;
   isDark: boolean;
 }) {
+  const t = isDark ? darkTheme : lightTheme;
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -615,22 +589,14 @@ function StackedAreaChart({
 
       {hoverIdx !== null && hovered && (
         <div
-          className={`absolute pointer-events-none rounded-lg border px-3 py-2 shadow-lg text-xs z-10 ${
-            isDark
-              ? "bg-slate-800 border-slate-700 text-slate-200"
-              : "bg-white border-slate-200 text-slate-800"
-          }`}
+          className={`absolute pointer-events-none rounded-lg border px-3 py-2 shadow-lg text-xs z-10 ${t.card}`}
           style={{
             top: 4,
             left: flipTooltip ? undefined : `calc(${tooltipLeft}% + 12px)`,
             right: flipTooltip ? `calc(${100 - tooltipLeft}% + 12px)` : undefined,
           }}
         >
-          <div
-            className={`font-semibold mb-1.5 ${
-              isDark ? "text-slate-300" : "text-slate-700"
-            }`}
-          >
+          <div className={`font-semibold mb-1.5 ${t.textSecondary}`}>
             {hovered.day}
           </div>
           {keys.map((_, k) => (
@@ -639,7 +605,7 @@ function StackedAreaChart({
                 className="w-2 h-2 rounded-sm shrink-0"
                 style={{ background: colors[k] }}
               />
-              <span className={isDark ? "text-slate-400" : "text-slate-500"}>
+              <span className={t.textMuted}>
                 {labels[k]}
               </span>
               <span className="ml-auto mono font-medium pl-3">
@@ -648,9 +614,7 @@ function StackedAreaChart({
             </div>
           ))}
           <div
-            className={`border-t mt-1.5 pt-1.5 flex justify-between font-semibold ${
-              isDark ? "border-slate-700" : "border-slate-200"
-            }`}
+            className={`border-t mt-1.5 pt-1.5 flex justify-between font-semibold ${t.divider}`}
           >
             <span>Total</span>
             <span className="mono">{format(hovered.total)}</span>
@@ -665,7 +629,7 @@ function StackedAreaChart({
               className="w-2.5 h-2.5 rounded-sm"
               style={{ background: colors[i] }}
             />
-            <span className={isDark ? "text-slate-400" : "text-slate-600"}>
+            <span className={t.textMuted}>
               {l}
             </span>
           </div>
