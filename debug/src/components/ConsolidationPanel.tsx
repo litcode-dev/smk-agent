@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
 import { useSocket, type SocketEvent } from "../lib/useSocket.js";
+import { darkTheme, lightTheme } from "../lib/theme.js";
+import { PanelHeader } from "./ui/index.js";
 
 type Phase =
   | "loaded"
@@ -132,27 +134,24 @@ export function ConsolidationPanel({ isDark }: { isDark: boolean }) {
   return (
     <div className="flex flex-col h-full -m-5">
       <div
-        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${
+        className={`shrink-0 border-b px-5 py-3 ${
           isDark ? "border-slate-800" : "border-slate-200"
         }`}
       >
-        <h2
-          className={`text-xs font-semibold uppercase tracking-wider ${
-            isDark ? "text-slate-500" : "text-slate-400"
-          }`}
-        >
-          Memory Consolidation
-        </h2>
-        <span className={`text-xs mono ${muted}`}>
-          {list.length} run{list.length === 1 ? "" : "s"}
-        </span>
-        <button
-          onClick={triggerManual}
-          disabled={triggering}
-          className="ml-auto px-3 py-1.5 text-xs rounded-md bg-sky-600 hover:bg-sky-500 text-white transition disabled:opacity-50"
-        >
-          {triggering ? "Running…" : "Run now"}
-        </button>
+        <PanelHeader
+          isDark={isDark}
+          title="Memory Consolidation"
+          meta={`${list.length} run${list.length === 1 ? "" : "s"}`}
+          right={
+            <button
+              onClick={triggerManual}
+              disabled={triggering}
+              className="px-3 py-1.5 text-xs rounded-md bg-sky-600 hover:bg-sky-500 text-white transition disabled:opacity-50"
+            >
+              {triggering ? "Running…" : "Run now"}
+            </button>
+          }
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto debug-scroll p-4 space-y-3">
@@ -304,7 +303,8 @@ function ConsolidationDetail({
     setAllPhases(phases);
   }, [runId]);
 
-  const muted = isDark ? "text-slate-500" : "text-slate-400";
+  const t = isDark ? darkTheme : lightTheme;
+  const muted = t.textMuted;
 
   if (!run) {
     return (
@@ -319,9 +319,7 @@ function ConsolidationDetail({
         >
           ← Back
         </button>
-        <div
-          className={`text-sm ${isDark ? "text-slate-600" : "text-slate-400"}`}
-        >
+        <div className={`text-sm ${muted}`}>
           Loading run {runId}…
         </div>
       </div>
@@ -338,9 +336,7 @@ function ConsolidationDetail({
   return (
     <div className="flex flex-col h-full -m-5 fade-in">
       <div
-        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${
-          isDark ? "border-slate-800" : "border-slate-200"
-        }`}
+        className={`shrink-0 border-b px-5 py-3 flex items-center gap-3 ${t.border}`}
       >
         <button
           onClick={onBack}
@@ -364,11 +360,7 @@ function ConsolidationDetail({
             className={`relative inline-flex rounded-full h-2.5 w-2.5 ${statusCfg.dot}`}
           />
         </span>
-        <span
-          className={`text-sm font-medium ${
-            isDark ? "text-slate-200" : "text-slate-800"
-          }`}
-        >
+        <span className={`text-sm font-medium ${t.textPrimary}`}>
           Consolidation {runId.slice(-6)}
         </span>
         <span className={`text-xs ${statusCfg.color}`}>{statusCfg.label}</span>
@@ -378,9 +370,7 @@ function ConsolidationDetail({
       </div>
 
       <div
-        className={`shrink-0 border-b px-5 py-3 grid grid-cols-4 gap-4 text-center ${
-          isDark ? "border-slate-800/60" : "border-slate-100"
-        }`}
+        className={`shrink-0 border-b px-5 py-3 grid grid-cols-4 gap-4 text-center ${t.borderSubtle}`}
       >
         <SummaryStat
           label="proposals"
@@ -413,71 +403,25 @@ function ConsolidationDetail({
       </div>
 
       <div className="flex-1 overflow-y-auto debug-scroll p-5 space-y-6">
-        {/* Pipeline timeline (live + historical) */}
+        {/* Pipeline stepper */}
         <section>
-          <div
-            className={`text-[10px] font-semibold uppercase tracking-wider mb-3 ${muted}`}
-          >
-            Pipeline Timeline
-          </div>
-          {allPhases.length === 0 ? (
-            <div className={`text-sm ${muted}`}>
-              No live phase events captured. Scroll down for the stored
-              proposals and decisions from this run.
-            </div>
-          ) : (
-            <div className="space-y-0">
-              {allPhases.map((p, i) => {
-                const cfg = PHASE_CONFIG[p.phase] ?? PHASE_CONFIG.started;
-                const isLast = i === allPhases.length - 1;
-                return (
-                  <div key={`${p.ts}-${i}`} className="flex gap-3 slide-down">
-                    <div className="flex flex-col items-center shrink-0 w-5">
-                      <div className="mt-1.5 text-[14px] leading-none">
-                        {cfg.icon}
-                      </div>
-                      {!isLast && (
-                        <div
-                          className={`flex-1 w-px mt-1 ${
-                            isDark ? "bg-slate-800" : "bg-slate-200"
-                          }`}
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 pb-4">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span
-                          className={`text-[10px] font-bold mono tracking-wider ${cfg.color}`}
-                        >
-                          {cfg.label}
-                        </span>
-                        <span className={`text-[10px] mono ${muted}`}>
-                          {new Date(p.ts).toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <div
-                        className={`text-xs ${
-                          isDark ? "text-slate-400" : "text-slate-600"
-                        } mono`}
-                      >
-                        {p.memoriesCount !== undefined &&
-                          `memories scanned: ${p.memoriesCount}`}
-                        {p.proposalsCount !== undefined &&
-                          `proposals: ${p.proposalsCount}`}
-                        {p.approvedCount !== undefined &&
-                          `approved: ${p.approvedCount} · rejected: ${p.rejectedCount ?? 0}`}
-                        {p.mergedCount !== undefined &&
-                          `merged: ${p.mergedCount} · pruned: ${p.prunedCount ?? 0}`}
-                        {p.error && (
-                          <span className="text-rose-400">{p.error}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <PhaseStepper
+            isDark={isDark}
+            phases={allPhases.map((p) => p.phase)}
+            isRunning={
+              run.status !== "completed" && run.status !== "failed"
+            }
+            currentPhase={allPhases.at(-1)?.phase ?? run.status ?? null}
+            detail={(() => {
+              const last = allPhases.at(-1);
+              if (!last) return null;
+              if (last.memoriesCount !== undefined) return `Loaded ${last.memoriesCount} memories`;
+              if (last.proposalsCount !== undefined) return `${last.proposalsCount} proposals — ${last.approvedCount ?? 0} approved, ${last.rejectedCount ?? 0} rejected`;
+              if (last.mergedCount !== undefined) return `Applied: ${last.mergedCount} merged, ${last.prunedCount ?? 0} pruned`;
+              if (last.error) return `Error: ${last.error}`;
+              return null;
+            })()}
+          />
         </section>
 
         {/* Stored reasoning — proposals + decisions + applied */}
@@ -490,11 +434,7 @@ function ConsolidationDetail({
             >
               Notes
             </div>
-            <div
-              className={`text-xs ${
-                isDark ? "text-slate-400" : "text-slate-600"
-              }`}
-            >
+            <div className={`text-xs ${t.textSecondary}`}>
               {run.notes}
             </div>
           </section>
@@ -682,6 +622,114 @@ function SummaryStat({
       <div className={`text-[10px] uppercase tracking-wider ${isDark ? "text-slate-500" : "text-slate-400"}`}>
         {label}
       </div>
+    </div>
+  );
+}
+
+// Maps the live phase stream to 5 stepper slots.
+const STEPPER_SLOTS = [
+  { key: "loaded",    label: "Loaded"   },
+  { key: "proposed",  label: "Proposed" },
+  { key: "judging",   label: "Judging"  },
+  { key: "applying",  label: "Applying" },
+  { key: "completed", label: "Done"     },
+] as const;
+
+function phaseToSlotIndex(phase: string): number {
+  if (phase === "loaded" || phase === "started" || phase === "proposing") return 0;
+  if (phase === "proposed") return 1;
+  if (phase === "judging" || phase === "judged") return 2;
+  if (phase === "applying") return 3;
+  if (phase === "completed" || phase === "failed") return 4;
+  return -1;
+}
+
+function PhaseStepper({
+  isDark,
+  phases,
+  isRunning,
+  currentPhase,
+  detail,
+}: {
+  isDark: boolean;
+  phases: string[];
+  isRunning: boolean;
+  currentPhase: string | null;
+  detail: string | null;
+}) {
+  const t = isDark ? darkTheme : lightTheme;
+  const activeIdx = currentPhase ? phaseToSlotIndex(currentPhase) : -1;
+
+  return (
+    <div>
+      {/* Step row */}
+      <div className="flex items-center gap-0 mb-4">
+        {STEPPER_SLOTS.map((slot, i) => {
+          const isDone = activeIdx > i || (!isRunning && activeIdx === i && (currentPhase === "completed" || currentPhase === "failed"));
+          const isActive = isRunning && activeIdx === i;
+          const isLast = i === STEPPER_SLOTS.length - 1;
+
+          return (
+            <div key={slot.key} className="flex items-center flex-1">
+              <div className="flex flex-col items-center flex-shrink-0">
+                {/* Circle */}
+                <div
+                  className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold ${
+                    isDone
+                      ? t.stepperComplete
+                      : isActive
+                        ? `${t.stepperActive} ${isDark ? "shadow-[0_0_8px_rgba(251,191,36,0.4)]" : "shadow-sm"}`
+                        : t.stepperPending
+                  }`}
+                >
+                  {isDone ? "✓" : isActive ? (
+                    <span className={`w-2 h-2 rounded-full ${isDark ? "bg-amber-400" : "bg-amber-500"}`} />
+                  ) : (
+                    <span className={isDark ? "text-slate-600" : "text-slate-400"}>{i + 1}</span>
+                  )}
+                </div>
+                {/* Label */}
+                <span
+                  className={`text-[8px] font-semibold uppercase tracking-[0.04em] mt-1.5 text-center leading-tight ${
+                    isDone ? t.textAccent : isActive ? (isDark ? "text-amber-400" : "text-amber-600") : t.textMuted
+                  }`}
+                >
+                  {slot.label}
+                </span>
+              </div>
+              {/* Connector line */}
+              {!isLast && (
+                <div
+                  className={`flex-1 h-[2px] mx-1 mb-4 ${
+                    isDone ? t.stepperLineComplete : t.stepperLinePending
+                  }`}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Detail card */}
+      {detail && (
+        <div
+          className={`rounded-lg border px-3 py-2.5 text-[11px] ${
+            isDark
+              ? currentPhase === "failed"
+                ? "border-rose-900/50 bg-rose-950/30 text-rose-400"
+                : currentPhase === "completed"
+                  ? "border-emerald-900/50 bg-emerald-950/20 text-emerald-400"
+                  : "border-amber-900/50 bg-amber-950/20 text-amber-400"
+              : currentPhase === "failed"
+                ? "border-rose-200 bg-rose-50 text-rose-700"
+                : currentPhase === "completed"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border-amber-200 bg-amber-50 text-amber-700"
+          }`}
+        >
+          {detail}
+        </div>
+      )}
     </div>
   );
 }
