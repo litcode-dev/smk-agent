@@ -3,7 +3,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
 import MemoryGraphView from "./MemoryGraphView.js";
 import { darkTheme, lightTheme } from "../lib/theme.js";
-import { FilterTabs, Badge } from "./ui/index.js";
+import { FilterTabs, Badge, PanelHeader } from "./ui/index.js";
 
 type Tier = "all" | "short" | "long" | "permanent";
 type Segment = "all" | "identity" | "preference" | "relationship" | "project" | "knowledge" | "context";
@@ -55,12 +55,8 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
     return true;
   });
 
-  const btnActive = isDark
-    ? "bg-slate-700 text-white font-medium"
-    : "bg-slate-200 text-slate-800 font-medium";
-  const btnInactive = isDark
-    ? "text-slate-500 hover:text-slate-300 hover:bg-slate-800"
-    : "text-slate-400 hover:text-slate-600 hover:bg-slate-100";
+  const btnActive = t.filterActive;
+  const btnInactive = t.filterInactive;
 
   return (
     <div className="flex flex-col h-full -m-5">
@@ -68,6 +64,11 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
       <div
         className={`shrink-0 border-b px-5 py-3 flex flex-wrap items-center gap-3 ${t.borderSubtle}`}
       >
+        <PanelHeader
+          isDark={isDark}
+          title="Memory"
+          meta={`${records?.length ?? 0} records`}
+        />
         <div
           className={`flex items-center rounded-md border ${t.border}`}
         >
@@ -175,9 +176,7 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
                         {(r.importance ?? 0).toFixed(2)}
                       </span>
                       <span
-                        className={`text-[10px] mono ${
-                          isDark ? "text-slate-700" : "text-slate-300"
-                        }`}
+                        className={`text-[10px] mono ${t.textMuted}`}
                       >
                         {r.accessCount ?? 0}x
                       </span>
