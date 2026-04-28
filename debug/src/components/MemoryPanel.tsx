@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api.js";
 import MemoryGraphView from "./MemoryGraphView.js";
+import { darkTheme, lightTheme } from "../lib/theme.js";
+import { FilterTabs, Badge } from "./ui/index.js";
 
 type Tier = "all" | "short" | "long" | "permanent";
 type Segment = "all" | "identity" | "preference" | "relationship" | "project" | "knowledge" | "context";
@@ -24,31 +26,9 @@ const SEGMENT_OPTIONS: Segment[] = [
   "context",
 ];
 
-const TIER_BADGE: Record<string, { dark: string; light: string }> = {
-  short: {
-    dark: "text-sky-400 bg-sky-400/10 border-sky-500/20",
-    light: "text-sky-600 bg-sky-50 border-sky-200",
-  },
-  long: {
-    dark: "text-violet-400 bg-violet-400/10 border-violet-500/20",
-    light: "text-violet-600 bg-violet-50 border-violet-200",
-  },
-  permanent: {
-    dark: "text-amber-400 bg-amber-400/10 border-amber-500/20",
-    light: "text-amber-600 bg-amber-50 border-amber-200",
-  },
-};
-
-const SEGMENT_COLOR: Record<string, { dark: string; light: string }> = {
-  identity: { dark: "text-rose-400", light: "text-rose-600" },
-  preference: { dark: "text-teal-400", light: "text-teal-600" },
-  relationship: { dark: "text-pink-400", light: "text-pink-600" },
-  project: { dark: "text-orange-400", light: "text-orange-600" },
-  knowledge: { dark: "text-blue-400", light: "text-blue-600" },
-  context: { dark: "text-slate-400", light: "text-slate-500" },
-};
-
 export function MemoryPanel({ isDark }: { isDark: boolean }) {
+  const t = isDark ? darkTheme : lightTheme;
+
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [tierFilter, setTierFilter] = useState<Tier>("all");
   const [segmentFilter, setSegmentFilter] = useState<Segment>("all");
@@ -86,14 +66,10 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
     <div className="flex flex-col h-full -m-5">
       {/* Toolbar */}
       <div
-        className={`shrink-0 border-b px-5 py-3 flex flex-wrap items-center gap-3 ${
-          isDark ? "border-slate-800" : "border-slate-200"
-        }`}
+        className={`shrink-0 border-b px-5 py-3 flex flex-wrap items-center gap-3 ${t.borderSubtle}`}
       >
         <div
-          className={`flex items-center rounded-md border ${
-            isDark ? "border-slate-700" : "border-slate-200"
-          }`}
+          className={`flex items-center rounded-md border ${t.border}`}
         >
           {(["table", "graph"] as const).map((mode) => (
             <button
@@ -110,35 +86,19 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
 
         {viewMode === "table" && (
           <>
-            <div className="flex items-center gap-1">
-              {TIER_OPTIONS.map((t) => (
-                <button
-                  key={t.value}
-                  onClick={() => setTierFilter(t.value)}
-                  className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
-                    tierFilter === t.value ? btnActive : btnInactive
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
+            <FilterTabs
+              isDark={isDark}
+              options={TIER_OPTIONS}
+              value={tierFilter}
+              onChange={setTierFilter}
+            />
 
-            <select
+            <FilterTabs
+              isDark={isDark}
+              options={SEGMENT_OPTIONS.map((s) => ({ value: s, label: s === "all" ? "All" : s }))}
               value={segmentFilter}
-              onChange={(e) => setSegmentFilter(e.target.value as Segment)}
-              className={`text-xs rounded-md px-2.5 py-1.5 focus:outline-none border ${
-                isDark
-                  ? "bg-slate-800 border-slate-700 text-slate-300"
-                  : "bg-white border-slate-200 text-slate-700"
-              }`}
-            >
-              {SEGMENT_OPTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {s === "all" ? "All segments" : s}
-                </option>
-              ))}
-            </select>
+              onChange={setSegmentFilter}
+            />
 
             <input
               type="text"
@@ -152,11 +112,7 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
               }`}
             />
 
-            <span
-              className={`text-xs mono ${
-                isDark ? "text-slate-600" : "text-slate-400"
-              }`}
-            >
+            <span className={`text-xs mono ${t.textMuted}`}>
               {filtered.length}/{allRecords.length}
             </span>
           </>
@@ -183,11 +139,7 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <p
-              className={`text-sm text-center py-12 ${
-                isDark ? "text-slate-600" : "text-slate-400"
-              }`}
-            >
+            <p className={`text-sm text-center py-12 ${t.textMuted}`}>
               No records match your filters
             </p>
           ) : (
@@ -198,12 +150,6 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
             >
               {filtered.map((r: any) => {
                 const isExpanded = expandedId === r.memoryId;
-                const tierBadge = TIER_BADGE[r.tier] ?? { dark: "", light: "" };
-                const segColor =
-                  SEGMENT_COLOR[r.segment] ?? {
-                    dark: "text-slate-400",
-                    light: "text-slate-500",
-                  };
 
                 return (
                   <div
@@ -216,25 +162,16 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
                     }
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-                          isDark ? tierBadge.dark : tierBadge.light
-                        }`}
-                      >
-                        {r.tier}
-                      </span>
-                      <span
-                        className={`text-[10px] font-semibold ${
-                          isDark ? segColor.dark : segColor.light
-                        }`}
-                      >
-                        {r.segment}
-                      </span>
-                      <span
-                        className={`text-[10px] mono ml-auto ${
-                          isDark ? "text-slate-600" : "text-slate-400"
-                        }`}
-                      >
+                      <Badge isDark={isDark} variant="tier" value={r.tier} />
+                      {(() => {
+                        const segColor = t.segment[r.segment as keyof typeof t.segment] ?? t.textMuted;
+                        return (
+                          <span className={`text-[9px] font-medium flex-shrink-0 ${segColor}`}>
+                            {r.segment}
+                          </span>
+                        );
+                      })()}
+                      <span className={`text-[10px] mono ml-auto ${t.textMuted}`}>
                         {(r.importance ?? 0).toFixed(2)}
                       </span>
                       <span
@@ -249,7 +186,7 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
                     <p
                       className={`text-sm ${
                         isExpanded ? "" : "line-clamp-2"
-                      } ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                      } ${t.textSecondary}`}
                     >
                       {r.content}
                     </p>
@@ -257,47 +194,31 @@ export function MemoryPanel({ isDark }: { isDark: boolean }) {
                     {isExpanded && (
                       <div className="mt-3 space-y-2 text-xs slide-down">
                         <div
-                          className={`grid grid-cols-2 gap-x-6 gap-y-1 ${
-                            isDark ? "text-slate-500" : "text-slate-400"
-                          }`}
+                          className={`grid grid-cols-2 gap-x-6 gap-y-1 ${t.textMuted}`}
                         >
                           <div>
                             ID:{" "}
-                            <span
-                              className={`mono ${
-                                isDark ? "text-slate-400" : "text-slate-600"
-                              }`}
-                            >
+                            <span className={`mono ${t.textSecondary}`}>
                               {r.memoryId}
                             </span>
                           </div>
                           <div>
                             Decay:{" "}
-                            <span
-                              className={`mono ${
-                                isDark ? "text-slate-400" : "text-slate-600"
-                              }`}
-                            >
+                            <span className={`mono ${t.textSecondary}`}>
                               {r.decayRate}
                             </span>
                           </div>
                           {r.sourceTurn && (
                             <div>
                               Turn:{" "}
-                              <span
-                                className={`mono ${
-                                  isDark ? "text-slate-400" : "text-slate-600"
-                                }`}
-                              >
+                              <span className={`mono ${t.textSecondary}`}>
                                 {r.sourceTurn}
                               </span>
                             </div>
                           )}
                           <div>
                             Last accessed:{" "}
-                            <span
-                              className={isDark ? "text-slate-400" : "text-slate-600"}
-                            >
+                            <span className={t.textSecondary}>
                               {new Date(r.lastAccessedAt).toLocaleString()}
                             </span>
                           </div>
